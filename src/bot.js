@@ -1,3 +1,6 @@
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 require("dotenv").config();
 
 const { Telegraf, Markup } = require("telegraf");
@@ -5,8 +8,20 @@ const { Telegraf, Markup } = require("telegraf");
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.start(async (ctx) => {
+  const user = ctx.from;
+
+  await prisma.user.upsert({
+    where: { telegramId: String(user.id) },
+    update: {},
+    create: {
+      telegramId: String(user.id),
+      username: user.username,
+      firstName: user.first_name,
+    },
+  });
+
   return ctx.reply(
-    "🏠 به ربات فروش خوش آمدید\nیکی از گزینه‌ها را انتخاب کنید:",
+    "🏠 به ربات خوش آمدید",
     Markup.keyboard([
       ["🛒 خرید سرویس", "👤 حساب کاربری"],
       ["💰 کیف پول", "📞 پشتیبانی"]
