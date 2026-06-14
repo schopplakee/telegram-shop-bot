@@ -10,6 +10,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.start(async (ctx) => {
   const user = ctx.from;
 
+  
   await prisma.user.upsert({
     where: { telegramId: String(user.id) },
     update: {},
