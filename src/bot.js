@@ -10,7 +10,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.start(async (ctx) => {
   const user = ctx.from;
 
-  
+
   await prisma.user.upsert({
     where: { telegramId: String(user.id) },
     update: {},
@@ -46,7 +46,14 @@ bot.hears("📞 پشتیبانی", (ctx) => {
   ctx.reply("📞 برای پشتیبانی پیام دهید: @support");
 });
 
-bot.launch();
+(async () => {
+  try {
+    await bot.launch();
+    console.log("Bot Started");
+  } catch (err) {
+    console.error("Launch Error:", err);
+  }
+})();
 
 console.log("Bot Started");
 
