@@ -2,6 +2,9 @@ const menuController = require("../controllers/menuController");
 
 const MENU = require("../constants/menu");
 
+const adminController = require("../controllers/adminController");
+const ADMIN = require("../constants/adminMenu");
+
 const routes = {
   [MENU.BUY_SERVICE]: menuController.buyService,
   [MENU.WALLET]: menuController.wallet,
@@ -9,6 +12,11 @@ const routes = {
   [MENU.GUIDE]: menuController.guide,
   [MENU.REFERRAL]: menuController.referral,
   [MENU.SUPPORT]: menuController.support,
+
+  [ADMIN.COUNTRIES]: adminController.countries,
+  [ADMIN.SERVERS]: adminController.servers,
+  [ADMIN.PLANS]: adminController.plans,
+  [ADMIN.USERS]: adminController.users,
 };
 
 module.exports = async (ctx) => {
