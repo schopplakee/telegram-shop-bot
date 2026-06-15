@@ -1,5 +1,7 @@
+const purchaseController = require("./purchaseController");
+
 async function buyService(ctx) {
-  return ctx.reply("🛒 لیست سرویس‌ها به زودی اینجا نمایش داده می‌شود.");
+  return purchaseController.startPurchase(ctx);
 }
 
 async function wallet(ctx) {

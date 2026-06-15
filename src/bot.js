@@ -5,10 +5,12 @@ const { Telegraf } = require("telegraf");
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 const messageHandler = require("./handlers/messageHandler");
+const callbackHandler = require("./callbacks/callbackHandler");
 
 require("./commands/start")(bot);
 
 bot.on("text", messageHandler);
+bot.on("callback_query", callbackHandler);
 
 (async () => {
   try {
