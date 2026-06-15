@@ -1,31 +1,9 @@
-async function getPlans(serverId){
- 
-    return [
+const planRepository = require("../repositories/planRepository");
 
-        {
-            id:1,
-            name:"30 روز | 50 گیگ",
-            price: "120,000"
-        },
-
-        {
-            id:2,
-            name:"60 روز | 100 گیگ",
-            price: "220,000"
-        },
-
-        {
-            id:3,
-            name:"90 روز | نامحدود",
-            price: "350,000"
-        }
-
-    ];
-
+async function getPlans(serverId) {
+  return planRepository.getPlans(serverId);
 }
 
 module.exports = {
-
-    getPlans
-
-}
+  getPlans,
+};
