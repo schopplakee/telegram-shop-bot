@@ -1,12 +1,14 @@
 const menuController = require("../controllers/menuController");
 
+const MENU = require("../constants/menu");
+
 const routes = {
-  "🛒 خرید سرویس جدید": menuController.buyService,
-  "💰 کیف پول من": menuController.wallet,
-  "👤 سرویس‌های من": menuController.myServices,
-  "💡 آموزش استفاده": menuController.guide,
-  "📞 معرفی به دوستان": menuController.referral,
-  "🧑‍💻 تیکت پشتیبانی": menuController.support,
+  [MENU.BUY_SERVICE]: menuController.buyService,
+  [MENU.WALLET]: menuController.wallet,
+  [MENU.MY_SERVICES]: menuController.myServices,
+  [MENU.GUIDE]: menuController.guide,
+  [MENU.REFERRAL]: menuController.referral,
+  [MENU.SUPPORT]: menuController.support,
 };
 
 module.exports = async (ctx) => {
