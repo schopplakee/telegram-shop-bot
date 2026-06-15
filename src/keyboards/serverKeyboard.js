@@ -1,17 +1,17 @@
 const { Markup } = require("telegraf");
 const ACTION = require("../constants/callbackActions");
 
-function countryKeyboard(countries){
+function serverKeyboard(servers){
 
     return Markup.inlineKeyboard(
 
-        countries.map(country=>[
+        servers.map(server=>[
 
             Markup.button.callback(
 
-                country.name,
+                server.name,
 
-                `${ACTION.COUNTRY}:${country.id}`
+                `${ACTION.SERVER}:${server.id}`
 
             )
 
@@ -23,6 +23,6 @@ function countryKeyboard(countries){
 
 module.exports={
 
-    countryKeyboard
+    serverKeyboard
 
 }

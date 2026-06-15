@@ -1,14 +1,23 @@
-const purchaseKeyboard = require("../keyboards/purchaseKeyboard");
+const purchaseKeyboard=require("../keyboards/purchaseKeyboard");
 
-async function startPurchase(ctx) {
+const countryService=require("../services/countryService");
 
-  return ctx.reply(
-    "🌍 کشور موردنظر را انتخاب کنید:",
-    purchaseKeyboard.countryKeyboard()
-  );
+async function startPurchase(ctx){
+
+    const countries=await countryService.getCountries();
+
+    return ctx.reply(
+
+        "🌍 کشور موردنظر را انتخاب کنید",
+
+        purchaseKeyboard.countryKeyboard(countries)
+
+    );
 
 }
 
-module.exports = {
-  startPurchase,
-};
+module.exports={
+
+    startPurchase
+
+}

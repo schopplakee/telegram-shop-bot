@@ -1,17 +1,17 @@
 const { Markup } = require("telegraf");
 const ACTION = require("../constants/callbackActions");
 
-function countryKeyboard(countries){
+function planKeyboard(plans){
 
     return Markup.inlineKeyboard(
 
-        countries.map(country=>[
+        plans.map(plan=>[
 
             Markup.button.callback(
 
-                country.name,
+                `${plan.name} - ${plan.price.toLocaleString()} تومان`,
 
-                `${ACTION.COUNTRY}:${country.id}`
+                `${ACTION.PLAN}:${plan.id}`
 
             )
 
@@ -23,6 +23,6 @@ function countryKeyboard(countries){
 
 module.exports={
 
-    countryKeyboard
+    planKeyboard
 
 }
