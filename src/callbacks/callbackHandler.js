@@ -4,6 +4,8 @@ const serverService = require("../services/serverService");
 const planService = require("../services/planService");
 const countryService = require("../services/countryService");
 const countryListKeyboard = require("../keyboards/countryListKeyboard");
+const sessionManager = require("../sessions/sessionManager");
+const adminKeyboard = require("../keyboards/adminKeyboard");
 
 const { serverKeyboard } = require("../keyboards/serverKeyboard");
 const { planKeyboard } = require("../keyboards/planKeyboard");
@@ -85,27 +87,27 @@ module.exports = async (ctx) => {
     }
 
     case "admin_country_delete": {
+      await countryService.deleteCountry(Number(id));
 
-    await countryService.deleteCountry(Number(id));
+      await ctx.answerCbQuery("✅ کشور حذف شد");
 
-    await ctx.answerCbQuery("✅ کشور حذف شد");
+      const countries = await countryService.getCountries();
 
-    const countries = await countryService.getCountries();
-
-    if (!countries.length) {
-
+      if (!countries.length) {
         return ctx.editMessageText("❌ هیچ کشوری وجود ندارد.");
+      }
 
-    }
-
-    return ctx.editMessageText(
-
+      return ctx.editMessageText(
         "🌍 کشورهای ثبت شده:",
 
-        countryListKeyboard(countries)
+        countryListKeyboard(countries),
+      );
+    }
 
-    );
+    case "admin": {
+      await sessionManager.clear(ctx.from.id);
 
-}
+      return ctx.editMessageText("👑 پنل مدیریت", adminKeyboard);
+    }
   }
 };
