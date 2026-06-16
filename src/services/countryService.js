@@ -14,8 +14,15 @@ async function countryExists(code) {
   return !!country;
 }
 
+async function getCountry(id) {
+
+    return countryRepository.getCountry(id);
+
+}
+
 module.exports = {
   getCountries,
   createCountry,
   countryExists,
+  getCountry,
 };

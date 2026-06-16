@@ -7,7 +7,6 @@ const { serverKeyboard } = require("../keyboards/serverKeyboard");
 const { planKeyboard } = require("../keyboards/planKeyboard");
 
 module.exports = async (ctx) => {
-
   const data = ctx.callbackQuery.data;
 
   const [action, id] = data.split(":");
@@ -15,45 +14,72 @@ module.exports = async (ctx) => {
   await ctx.answerCbQuery();
 
   switch (action) {
-
     case ACTION.COUNTRY: {
-
       const servers = await serverService.getServers(Number(id));
 
       return ctx.editMessageText(
-
         "🖥 سرور موردنظر را انتخاب کنید:",
 
-        serverKeyboard(servers)
-
+        serverKeyboard(servers),
       );
-
     }
 
     case ACTION.SERVER: {
-
       const plans = await planService.getPlans(Number(id));
 
       return ctx.editMessageText(
-
         "📦 پلن موردنظر را انتخاب کنید:",
 
-        planKeyboard(plans)
-
+        planKeyboard(plans),
       );
-
     }
 
     case ACTION.PLAN: {
-
       return ctx.editMessageText(
-
-        `✅ پلن شماره ${id} انتخاب شد.\n\nمرحله بعد: انتخاب روش پرداخت`
-
+        `✅ پلن شماره ${id} انتخاب شد.\n\nمرحله بعد: انتخاب روش پرداخت`,
       );
-
     }
 
-  }
+    case "country": {
+      const country = await countryService.getCountry(Number(id));
 
+      return ctx.editMessageText(
+        `🌍 ${country.flag} ${country.name}
+
+کد: ${country.code}
+
+یکی از گزینه‌ها را انتخاب کنید:`,
+
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: "✏️ ویرایش",
+
+                  callback_data: `country_edit:${country.id}`,
+                },
+              ],
+
+              [
+                {
+                  text: "🖥 مدیریت سرورها",
+
+                  callback_data: `country_servers:${country.id}`,
+                },
+              ],
+
+              [
+                {
+                  text: "❌ حذف",
+
+                  callback_data: `country_delete:${country.id}`,
+                },
+              ],
+            ],
+          },
+        },
+      );
+    }
+  }
 };

@@ -1,5 +1,6 @@
 const sessionManager = require("../sessions/sessionManager");
 const countryService = require("../services/countryService");
+const countryListKeyboard = require("../keyboards/countryListKeyboard");
 
 const SESSION_MODULES = require("../constants/sessionModules");
 const SESSION_STEPS = require("../constants/sessionSteps");
@@ -24,12 +25,10 @@ module.exports = {
       return ctx.reply("❌ هنوز کشوری ثبت نشده است.");
     }
 
-    let message = "🌍 لیست کشورها\n\n";
+    return ctx.reply(
+      "🌍 کشورهای ثبت شده:",
 
-    countries.forEach((country, index) => {
-      message += `${index + 1}. ${country.flag} ${country.name} (${country.code})\n`;
-    });
-
-    return ctx.reply(message);
+      countryListKeyboard(countries),
+    );
   },
 };

@@ -25,8 +25,23 @@ async function getCountryByCode(code) {
   });
 }
 
+async function getCountry(id) {
+
+    return prisma.country.findUnique({
+
+        where: {
+
+            id
+
+        }
+
+    });
+
+}
+
 module.exports = {
   getAllCountries,
   createCountry,
   getCountryByCode,
+  getCountry,
 };
