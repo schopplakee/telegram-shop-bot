@@ -1,9 +1,13 @@
+const sessionManager = require("../sessions/sessionManager");
+const countrySession = require("../sessions/countrySession");
+
 const menuController = require("../controllers/menuController");
 
 const MENU = require("../constants/menu");
 
 const adminController = require("../controllers/adminController");
 const ADMIN = require("../constants/adminMenu");
+const countryController = require("../controllers/countryController");
 
 const routes = {
   [MENU.BUY_SERVICE]: menuController.buyService,
@@ -24,10 +28,21 @@ const routes = {
   [ADMIN.SETTINGS]: adminController.settings,
   [ADMIN.STATS]: adminController.stats,
   [ADMIN.BROADCAST]: adminController.broadcast,
+
+  ["➕ افزودن کشور"]: countryController.addCountry,
+  ["📋 لیست کشورها"]: countryController.listCountries,
 };
 
 module.exports = async (ctx) => {
   const text = ctx.message?.text;
+
+  const session = await sessionManager.get(ctx.from.id);
+
+  if (session) {
+    if (session.module === "COUNTRY") {
+      return countrySession(ctx, session);
+    }
+  }
 
   const handler = routes[text];
 
