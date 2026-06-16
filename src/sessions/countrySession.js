@@ -1,7 +1,5 @@
 const sessionManager = require("./sessionManager");
-
 const countryService = require("../services/countryService");
-
 const SESSION_STEPS = require("../constants/sessionSteps");
 
 module.exports = async (ctx, session) => {
@@ -12,19 +10,13 @@ module.exports = async (ctx, session) => {
 
         case SESSION_STEPS.NAME: {
 
-            await sessionManager.set(
-
+            await sessionManager.next(
                 ctx.from.id,
-                session.module,
                 SESSION_STEPS.CODE,
-                {
-                    name: text
-                }
-
+                { name: text }
             );
 
-            return ctx.reply("🇺🇳 کد کشور را وارد کنید.\nمثال: DE");
-
+            return ctx.reply("🇺🇳 کد کشور را وارد کنید (مثال: DE)");
         }
 
         case SESSION_STEPS.CODE: {
@@ -32,45 +24,32 @@ module.exports = async (ctx, session) => {
             const exists = await countryService.countryExists(text.toUpperCase());
 
             if (exists) {
-
-                return ctx.reply("❌ این کد قبلاً ثبت شده است.");
-
+                return ctx.reply("❌ این کد قبلاً ثبت شده");
             }
 
-            await sessionManager.set(
-
+            await sessionManager.next(
                 ctx.from.id,
-                session.module,
                 SESSION_STEPS.FLAG,
                 {
                     ...session.data,
                     code: text.toUpperCase()
                 }
-
             );
 
-            return ctx.reply("🏳️ ایموجی پرچم را ارسال کنید.");
-
+            return ctx.reply("🏳️ ایموجی پرچم را ارسال کنید");
         }
 
         case SESSION_STEPS.FLAG: {
 
             await countryService.createCountry({
-
                 name: session.data.name,
-
                 code: session.data.code,
-
                 flag: text
-
             });
 
             await sessionManager.clear(ctx.from.id);
 
-            return ctx.reply("✅ کشور با موفقیت ثبت شد.");
-
+            return ctx.reply("✅ کشور با موفقیت ثبت شد");
         }
-
     }
-
 };

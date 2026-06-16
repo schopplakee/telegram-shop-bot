@@ -35,6 +35,8 @@ const routes = {
 
 module.exports = async (ctx) => {
   const text = ctx.message?.text;
+  
+  console.log("USER TEXT:", text);
 
   const session = await sessionManager.get(ctx.from.id);
 
@@ -49,4 +51,5 @@ module.exports = async (ctx) => {
   if (handler) {
     return handler(ctx);
   }
+
 };
