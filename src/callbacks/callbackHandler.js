@@ -42,7 +42,7 @@ module.exports = async (ctx) => {
       );
     }
 
-    case "country": {
+    case "admin_country": {
       const country = await countryService.getCountry(Number(id));
 
       return ctx.editMessageText(
@@ -59,7 +59,7 @@ module.exports = async (ctx) => {
                 {
                   text: "✏️ ویرایش",
 
-                  callback_data: `country_edit:${country.id}`,
+                  callback_data: `admin_country_edit:${country.id}`,
                 },
               ],
 
@@ -67,7 +67,7 @@ module.exports = async (ctx) => {
                 {
                   text: "🖥 مدیریت سرورها",
 
-                  callback_data: `country_servers:${country.id}`,
+                  callback_data: `admin_country_servers:${country.id}`,
                 },
               ],
 
@@ -75,7 +75,7 @@ module.exports = async (ctx) => {
                 {
                   text: "❌ حذف",
 
-                  callback_data: `country_delete:${country.id}`,
+                  callback_data: `admin_country_delete:${country.id}`,
                 },
               ],
             ],
@@ -84,7 +84,7 @@ module.exports = async (ctx) => {
       );
     }
 
-    case "country_delete": {
+    case "admin_country_delete": {
 
     await countryService.deleteCountry(Number(id));
 

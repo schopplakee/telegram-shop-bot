@@ -8,7 +8,7 @@ module.exports = (countries) => {
 
             `${country.flag} ${country.name}`,
 
-            `country:${country.id}`
+            `admin_country:${country.id}`
 
         )
 
