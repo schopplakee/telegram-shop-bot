@@ -17,6 +17,13 @@ const routes = {
   [ADMIN.SERVERS]: adminController.servers,
   [ADMIN.PLANS]: adminController.plans,
   [ADMIN.USERS]: adminController.users,
+
+  [ADMIN.TRANSACTIONS]: adminController.transactions,
+  [ADMIN.DISCOUNTS]: adminController.discounts,
+
+  [ADMIN.SETTINGS]: adminController.settings,
+  [ADMIN.STATS]: adminController.stats,
+  [ADMIN.BROADCAST]: adminController.broadcast,
 };
 
 module.exports = async (ctx) => {

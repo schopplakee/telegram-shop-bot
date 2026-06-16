@@ -1,4 +1,5 @@
 const adminMenu = require("../constants/adminMenu");
+
 const countryKeyboard = require("../keyboards/countryAdminKeyboard");
 
 module.exports = {
@@ -27,6 +28,36 @@ module.exports = {
     users: async (ctx) => {
 
         return ctx.reply("👥 مدیریت کاربران");
+
+    },
+
+    transactions: async (ctx) => {
+
+        return ctx.reply("💰 مدیریت تراکنش‌ها");
+
+    },
+
+    discounts: async (ctx) => {
+
+        return ctx.reply("🎁 مدیریت کد تخفیف");
+
+    },
+
+    settings: async (ctx) => {
+
+        return ctx.reply("⚙ تنظیمات");
+
+    },
+
+    stats: async (ctx) => {
+
+        return ctx.reply("📊 آمار");
+
+    },
+
+    broadcast: async (ctx) => {
+
+        return ctx.reply("📨 پیام همگانی");
 
     }
 
