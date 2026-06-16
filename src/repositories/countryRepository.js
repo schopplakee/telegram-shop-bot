@@ -39,9 +39,24 @@ async function getCountry(id) {
 
 }
 
+async function deleteCountry(id) {
+
+    return prisma.country.delete({
+
+        where: {
+
+            id
+
+        }
+
+    });
+
+}
+
 module.exports = {
   getAllCountries,
   createCountry,
   getCountryByCode,
   getCountry,
+  deleteCountry,
 };

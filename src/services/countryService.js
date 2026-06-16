@@ -20,9 +20,16 @@ async function getCountry(id) {
 
 }
 
+async function deleteCountry(id) {
+
+    return countryRepository.deleteCountry(id);
+
+}
+
 module.exports = {
   getCountries,
   createCountry,
   countryExists,
   getCountry,
+  deleteCountry,
 };
