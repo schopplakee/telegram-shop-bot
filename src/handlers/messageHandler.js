@@ -9,55 +9,54 @@ const sessionManager = require("../sessions/sessionManager");
 const countrySession = require("../sessions/countrySession");
 
 const routes = {
+  // User
+  [MENU.BUY_SERVICE]: menuController.buyService,
+  [MENU.WALLET]: menuController.wallet,
+  [MENU.MY_SERVICES]: menuController.myServices,
+  [MENU.GUIDE]: menuController.guide,
+  [MENU.REFERRAL]: menuController.referral,
+  [MENU.SUPPORT]: menuController.support,
 
-    // User
-    [MENU.BUY_SERVICE]: menuController.buyService,
-    [MENU.WALLET]: menuController.wallet,
-    [MENU.MY_SERVICES]: menuController.myServices,
-    [MENU.GUIDE]: menuController.guide,
-    [MENU.REFERRAL]: menuController.referral,
-    [MENU.SUPPORT]: menuController.support,
+  // Admin
+  [ADMIN.COUNTRIES]: adminController.countries,
+  [ADMIN.SERVERS]: adminController.servers,
+  [ADMIN.PLANS]: adminController.plans,
+  [ADMIN.USERS]: adminController.users,
+  [ADMIN.TRANSACTIONS]: adminController.transactions,
+  [ADMIN.DISCOUNTS]: adminController.discounts,
+  [ADMIN.SETTINGS]: adminController.settings,
+  [ADMIN.STATS]: adminController.stats,
+  [ADMIN.BROADCAST]: adminController.broadcast,
 
-    // Admin
-    [ADMIN.COUNTRIES]: adminController.countries,
-    [ADMIN.SERVERS]: adminController.servers,
-    [ADMIN.PLANS]: adminController.plans,
-    [ADMIN.USERS]: adminController.users,
-    [ADMIN.TRANSACTIONS]: adminController.transactions,
-    [ADMIN.DISCOUNTS]: adminController.discounts,
-    [ADMIN.SETTINGS]: adminController.settings,
-    [ADMIN.STATS]: adminController.stats,
-    [ADMIN.BROADCAST]: adminController.broadcast,
-
-    // Country
-    ["➕ افزودن کشور"]: countryController.addCountry,
-    ["📋 لیست کشورها"]: countryController.listCountries,
-
+  // Country
+  ["➕ افزودن کشور"]: countryController.addCountry,
+  ["📋 لیست کشورها"]: countryController.listCountries,
 };
 
 module.exports = async (ctx) => {
+  const text = ctx.message?.text;
 
-    const text = ctx.message?.text;
+  const session = await sessionManager.get(ctx.from.id);
 
-    // 1- اگر Route وجود داشت، مستقیم اجرا شود
-    const handler = routes[text];
+  if (session && routes[text]) {
+    await sessionManager.clear(ctx.from.id);
+  }
 
-    if (handler) {
-        return handler(ctx);
-    }
+  // 1- اگر Route وجود داشت، مستقیم اجرا شود
+  const handler = routes[text];
 
-    // 2- اگر Route نبود، Session بررسی شود
-    const session = await sessionManager.get(ctx.from.id);
+  if (handler) {
+    return handler(ctx);
+  }
 
-    if (!session) {
-        return;
-    }
+  const currentSession = await sessionManager.get(ctx.from.id);
 
-    switch (session.module) {
+  if (!currentSession) {
+    return;
+  }
 
-        case "COUNTRY":
-            return countrySession(ctx, session);
-
-    }
-
+  switch (currentSession.module) {
+    case "COUNTRY":
+      return countrySession(ctx, currentSession);
+  }
 };

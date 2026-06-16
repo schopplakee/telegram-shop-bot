@@ -15,7 +15,13 @@ module.exports = {
       SESSION_STEPS.NAME,
     );
 
-    return ctx.reply("🌍 لطفاً نام کشور را وارد کنید.");
+    const { Markup } = require("telegraf");
+
+    return ctx.reply(
+      "🌍 لطفاً نام کشور را وارد کنید.",
+
+      Markup.keyboard([["❌ لغو"]]).resize(),
+    );
   },
 
   async listCountries(ctx) {
