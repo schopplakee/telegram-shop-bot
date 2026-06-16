@@ -1,28 +1,75 @@
 const sessionManager = require("./sessionManager");
 
+const countryService = require("../services/countryService");
+
 const SESSION_STEPS = require("../constants/sessionSteps");
 
 module.exports = async (ctx, session) => {
 
+    const text = ctx.message.text;
+
     switch (session.step) {
 
-        case SESSION_STEPS.NAME:
+        case SESSION_STEPS.NAME: {
 
-            console.log("مرحله دریافت نام کشور");
+            await sessionManager.set(
 
-            break;
+                ctx.from.id,
+                session.module,
+                SESSION_STEPS.CODE,
+                {
+                    name: text
+                }
 
-        case SESSION_STEPS.CODE:
+            );
 
-            console.log("مرحله دریافت کد کشور");
+            return ctx.reply("🇺🇳 کد کشور را وارد کنید.\nمثال: DE");
 
-            break;
+        }
 
-        case SESSION_STEPS.FLAG:
+        case SESSION_STEPS.CODE: {
 
-            console.log("مرحله دریافت پرچم");
+            const exists = await countryService.countryExists(text.toUpperCase());
 
-            break;
+            if (exists) {
+
+                return ctx.reply("❌ این کد قبلاً ثبت شده است.");
+
+            }
+
+            await sessionManager.set(
+
+                ctx.from.id,
+                session.module,
+                SESSION_STEPS.FLAG,
+                {
+                    ...session.data,
+                    code: text.toUpperCase()
+                }
+
+            );
+
+            return ctx.reply("🏳️ ایموجی پرچم را ارسال کنید.");
+
+        }
+
+        case SESSION_STEPS.FLAG: {
+
+            await countryService.createCountry({
+
+                name: session.data.name,
+
+                code: session.data.code,
+
+                flag: text
+
+            });
+
+            await sessionManager.clear(ctx.from.id);
+
+            return ctx.reply("✅ کشور با موفقیت ثبت شد.");
+
+        }
 
     }
 

@@ -4,6 +4,18 @@ async function getCountries() {
   return countryRepository.getAllCountries();
 }
 
+async function createCountry(data) {
+  return countryRepository.createCountry(data);
+}
+
+async function countryExists(code) {
+  const country = await countryRepository.getCountryByCode(code);
+
+  return !!country;
+}
+
 module.exports = {
   getCountries,
+  createCountry,
+  countryExists,
 };
