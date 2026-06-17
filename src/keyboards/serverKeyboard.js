@@ -1,28 +1,18 @@
 const { Markup } = require("telegraf");
 const ACTION = require("../constants/callbackActions");
 
-function serverKeyboard(servers){
+function serverKeyboard(servers) {
+  return Markup.inlineKeyboard(
+    servers.map((server) => [
+      Markup.button.callback(
+        server.name,
 
-    return Markup.inlineKeyboard(
-
-        servers.map(server=>[
-
-            Markup.button.callback(
-
-                server.name,
-
-                `${ACTION.SERVER}:${server.id}`
-
-            )
-
-        ])
-
-    );
-
+        `${ACTION.SERVER}:${server.id}`,
+      ),
+    ]),
+  );
 }
 
-module.exports={
-
-    serverKeyboard
-
-}
+module.exports = {
+  serverKeyboard,
+};

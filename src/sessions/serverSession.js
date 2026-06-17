@@ -4,6 +4,7 @@ const SESSION_STEPS = require("../constants/sessionSteps");
 
 const countryService = require("../services/countryService");
 const serverCountryKeyboard = require("../keyboards/serverCountryKeyboard");
+const serverAdminKeyboard = require("../keyboards/serverAdminKeyboard");
 
 module.exports = async (ctx, session) => {
   const text = ctx.message.text;
@@ -77,7 +78,7 @@ module.exports = async (ctx, session) => {
 
       await sessionManager.clear(ctx.from.id);
 
-      return ctx.reply("✅ سرور با موفقیت ثبت شد.");
+      return ctx.reply("✅ سرور با موفقیت ثبت شد.", serverAdminKeyboard);
     }
   }
 };
