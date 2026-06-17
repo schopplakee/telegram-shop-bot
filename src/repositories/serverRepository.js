@@ -32,16 +32,6 @@ async function createServer(data) {
   });
 }
 
-async function updateServer(id, data) {
-  return prisma.server.update({
-    where: {
-      id,
-    },
-
-    data,
-  });
-}
-
 async function deleteServer(id) {
   return prisma.server.delete({
     where: {
@@ -64,7 +54,6 @@ module.exports = {
   getAllServers,
   getServer,
   createServer,
-  updateServer,
   deleteServer,
   updateServer,
 };

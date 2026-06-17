@@ -10,6 +10,8 @@ const serverListKeyboard = require("../keyboards/serverListKeyboard");
 module.exports = async (ctx) => {
   const data = ctx.callbackQuery.data;
 
+  console.log(data);
+
   const [action, id] = data.split(":");
 
   await ctx.answerCbQuery();
@@ -264,7 +266,6 @@ module.exports = async (ctx) => {
 
       return ctx.reply(
         "✏️ نام جدید سرور را وارد کنید.",
-
         require("../keyboards/cancelKeyboard"),
       );
     }

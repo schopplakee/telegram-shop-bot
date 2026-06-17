@@ -12,10 +12,6 @@ async function createServer(data) {
   return serverRepository.createServer(data);
 }
 
-async function updateServer(id, data) {
-  return serverRepository.updateServer(id, data);
-}
-
 async function deleteServer(id) {
   return serverRepository.deleteServer(id);
 }
@@ -28,6 +24,6 @@ module.exports = {
   getServers,
   getServer,
   createServer,
-  updateServer,
   deleteServer,
+  updateServer,
 };
