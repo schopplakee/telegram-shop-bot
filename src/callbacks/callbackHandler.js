@@ -123,5 +123,14 @@ module.exports = async (ctx) => {
         countryListKeyboard(countries),
       );
     }
+
+    case "admin_country_back": {
+      return ctx.deleteMessage().then(() => {
+        return ctx.reply(
+          "🌍 مدیریت کشورها",
+          require("../keyboards/countryAdminKeyboard"),
+        );
+      });
+    }
   }
 };

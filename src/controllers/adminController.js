@@ -1,64 +1,50 @@
-const adminMenu = require("../constants/adminMenu");
-
-const countryKeyboard = require("../keyboards/countryAdminKeyboard");
+const adminKeyboard = require("../keyboards/adminKeyboard");
+const countryAdminKeyboard = require("../keyboards/countryAdminKeyboard");
 
 module.exports = {
+  async countries(ctx) {
+    return ctx.reply(
+      "🌍 مدیریت کشورها",
+      countryAdminKeyboard,
+    );
+  },
 
-    countries: async (ctx) => {
+  async servers(ctx) {
+    return ctx.reply("🖥 مدیریت سرورها");
+  },
 
-        return ctx.reply(
-            "🌍 مدیریت کشورها",
-            countryKeyboard
-        );
+  async plans(ctx) {
+    return ctx.reply("📦 مدیریت پلن‌ها");
+  },
 
-    },
+  async users(ctx) {
+    return ctx.reply("👥 مدیریت کاربران");
+  },
 
-    servers: async (ctx) => {
+  async transactions(ctx) {
+    return ctx.reply("💰 مدیریت تراکنش‌ها");
+  },
 
-        return ctx.reply("🖥 مدیریت سرورها");
+  async discounts(ctx) {
+    return ctx.reply("🎁 مدیریت کد تخفیف");
+  },
 
-    },
+  async settings(ctx) {
+    return ctx.reply("⚙ تنظیمات");
+  },
 
-    plans: async (ctx) => {
+  async stats(ctx) {
+    return ctx.reply("📊 آمار");
+  },
 
-        return ctx.reply("📦 مدیریت پلن‌ها");
+  async broadcast(ctx) {
+    return ctx.reply("📨 پیام همگانی");
+  },
 
-    },
-
-    users: async (ctx) => {
-
-        return ctx.reply("👥 مدیریت کاربران");
-
-    },
-
-    transactions: async (ctx) => {
-
-        return ctx.reply("💰 مدیریت تراکنش‌ها");
-
-    },
-
-    discounts: async (ctx) => {
-
-        return ctx.reply("🎁 مدیریت کد تخفیف");
-
-    },
-
-    settings: async (ctx) => {
-
-        return ctx.reply("⚙ تنظیمات");
-
-    },
-
-    stats: async (ctx) => {
-
-        return ctx.reply("📊 آمار");
-
-    },
-
-    broadcast: async (ctx) => {
-
-        return ctx.reply("📨 پیام همگانی");
-
-    }
-
+  async back(ctx) {
+    return ctx.reply(
+      "👑 پنل مدیریت",
+      adminKeyboard,
+    );
+  },
 };

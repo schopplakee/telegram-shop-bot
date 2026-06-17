@@ -1,25 +1,21 @@
 const { Markup } = require("telegraf");
 
 module.exports = (countries) => {
+  const buttons = countries.map((country) => [
+    Markup.button.callback(
+      `${country.flag} ${country.name}`,
 
-    const buttons = countries.map(country => [
+      `admin_country:${country.id}`,
+    ),
+  ]);
 
-        Markup.button.callback(
+  buttons.push([
+    Markup.button.callback(
+      "⬅️ بازگشت",
 
-            `${country.flag} ${country.name}`,
+      "admin_country_back",
+    ),
+  ]);
 
-            `admin_country:${country.id}`
-
-        )
-
-    ]);
-
-    buttons.push([
-
-        Markup.button.callback("⬅️ بازگشت", "admin")
-
-    ]);
-
-    return Markup.inlineKeyboard(buttons);
-
+  return Markup.inlineKeyboard(buttons);
 };
