@@ -8,6 +8,9 @@ const serverCountryKeyboard = require("../keyboards/serverCountryKeyboard");
 module.exports = async (ctx, session) => {
   const text = ctx.message.text;
 
+  console.log("SERVER STEP:", session.step);
+  console.log("TEXT:", text);
+
   switch (session.step) {
     case SESSION_STEPS.NAME: {
       await sessionManager.next(
