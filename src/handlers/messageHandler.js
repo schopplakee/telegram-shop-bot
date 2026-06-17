@@ -57,6 +57,9 @@ module.exports = async (ctx) => {
 
       case "SERVER":
         return serverController.cancel(ctx);
+
+      case "SERVER_EDIT":
+        return serverController.cancel(ctx);
     }
   }
 
