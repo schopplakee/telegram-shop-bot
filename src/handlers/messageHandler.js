@@ -31,6 +31,7 @@ const routes = {
   // Country
   ["➕ افزودن کشور"]: countryController.addCountry,
   ["📋 لیست کشورها"]: countryController.listCountries,
+  ["❌ لغو"]: countryController.cancel,
 };
 
 module.exports = async (ctx) => {
