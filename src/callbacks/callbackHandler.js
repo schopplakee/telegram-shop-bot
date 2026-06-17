@@ -3,12 +3,8 @@ const ACTION = require("../constants/callbackActions");
 const serverService = require("../services/serverService");
 const planService = require("../services/planService");
 const countryService = require("../services/countryService");
-const countryListKeyboard = require("../keyboards/countryListKeyboard");
-const sessionManager = require("../sessions/sessionManager");
-const adminKeyboard = require("../keyboards/adminKeyboard");
 
-const { serverKeyboard } = require("../keyboards/serverKeyboard");
-const { planKeyboard } = require("../keyboards/planKeyboard");
+const countryListKeyboard = require("../keyboards/countryListKeyboard");
 
 module.exports = async (ctx) => {
   const data = ctx.callbackQuery.data;
@@ -18,6 +14,10 @@ module.exports = async (ctx) => {
   await ctx.answerCbQuery();
 
   switch (action) {
+    // ==========================
+    // USER
+    // ==========================
+
     case ACTION.COUNTRY: {
       const servers = await serverService.getServers(Number(id));
 
@@ -44,15 +44,19 @@ module.exports = async (ctx) => {
       );
     }
 
+    // ==========================
+    // ADMIN COUNTRY
+    // ==========================
+
     case "admin_country": {
       const country = await countryService.getCountry(Number(id));
 
       return ctx.editMessageText(
         `🌍 ${country.flag} ${country.name}
 
-      کد: ${country.code}
+کد کشور: ${country.code}
 
-      یکی از گزینه‌ها را انتخاب کنید:`,
+یکی از گزینه‌ها را انتخاب کنید:`,
 
         {
           reply_markup: {
@@ -60,7 +64,6 @@ module.exports = async (ctx) => {
               [
                 {
                   text: "✏️ ویرایش",
-
                   callback_data: `admin_country_edit:${country.id}`,
                 },
               ],
@@ -68,7 +71,6 @@ module.exports = async (ctx) => {
               [
                 {
                   text: "🖥 مدیریت سرورها",
-
                   callback_data: `admin_country_servers:${country.id}`,
                 },
               ],
@@ -76,8 +78,14 @@ module.exports = async (ctx) => {
               [
                 {
                   text: "❌ حذف",
-
                   callback_data: `admin_country_delete:${country.id}`,
+                },
+              ],
+
+              [
+                {
+                  text: "⬅️ بازگشت",
+                  callback_data: "admin_country_list",
                 },
               ],
             ],
@@ -89,12 +97,10 @@ module.exports = async (ctx) => {
     case "admin_country_delete": {
       await countryService.deleteCountry(Number(id));
 
-      await ctx.answerCbQuery("✅ کشور حذف شد");
-
       const countries = await countryService.getCountries();
 
       if (!countries.length) {
-        return ctx.editMessageText("❌ هیچ کشوری وجود ندارد.");
+        return ctx.editMessageText("❌ هیچ کشوری ثبت نشده است.");
       }
 
       return ctx.editMessageText(
@@ -104,10 +110,18 @@ module.exports = async (ctx) => {
       );
     }
 
-    case "admin": {
-      await sessionManager.clear(ctx.from.id);
+    case "admin_country_list": {
+      const countries = await countryService.getCountries();
 
-      return ctx.editMessageText("👑 پنل مدیریت", adminKeyboard);
+      if (!countries.length) {
+        return ctx.editMessageText("❌ هیچ کشوری ثبت نشده است.");
+      }
+
+      return ctx.editMessageText(
+        "🌍 کشورهای ثبت شده:",
+
+        countryListKeyboard(countries),
+      );
     }
   }
 };
