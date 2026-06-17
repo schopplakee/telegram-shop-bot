@@ -8,6 +8,8 @@ module.exports = {
   COUNTRY: "COUNTRY",
   INBOUND: "INBOUND",
   REMARK: "REMARK",
+  EDIT_NAME: "EDIT_NAME",
+  EDIT_REMARK: "EDIT_REMARK",
 
   // General
   DESCRIPTION: "DESCRIPTION",

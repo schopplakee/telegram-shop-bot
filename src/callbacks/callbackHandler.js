@@ -242,5 +242,31 @@ module.exports = async (ctx) => {
         );
       });
     }
+
+    case "admin_server_edit": {
+      const server = await serverService.getServer(Number(id));
+
+      const sessionManager = require("../sessions/sessionManager");
+
+      await sessionManager.start(
+        ctx.from.id,
+
+        "SERVER_EDIT",
+
+        "EDIT_NAME",
+
+        {
+          serverId: server.id,
+        },
+      );
+
+      await ctx.deleteMessage();
+
+      return ctx.reply(
+        "✏️ نام جدید سرور را وارد کنید.",
+
+        require("../keyboards/cancelKeyboard"),
+      );
+    }
   }
 };

@@ -9,6 +9,7 @@ const ADMIN = require("../constants/adminMenu");
 const sessionManager = require("../sessions/sessionManager");
 const countrySession = require("../sessions/countrySession");
 const serverSession = require("../sessions/serverSession");
+const serverEditSession = require("../sessions/serverEditSession");
 
 const routes = {
   // User
@@ -84,5 +85,8 @@ module.exports = async (ctx) => {
 
     case "SERVER":
       return serverSession(ctx, currentSession);
+
+    case "SERVER_EDIT":
+      return serverEditSession(ctx, currentSession);
   }
 };
