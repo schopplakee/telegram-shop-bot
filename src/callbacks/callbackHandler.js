@@ -207,7 +207,7 @@ module.exports = async (ctx) => {
     case "admin_server_delete": {
       await serverService.deleteServer(Number(id));
 
-      const servers = await serverService.getServersList();
+      const servers = await serverService.getServers();
 
       if (!servers.length) {
         return ctx.editMessageText("❌ هنوز سروری ثبت نشده است.");
