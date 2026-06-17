@@ -2,6 +2,7 @@ const menuController = require("../controllers/menuController");
 const adminController = require("../controllers/adminController");
 const countryController = require("../controllers/countryController");
 const serverController = require("../controllers/serverController");
+const planController = require("../controllers/planController");
 
 const MENU = require("../constants/menu");
 const ADMIN = require("../constants/adminMenu");
@@ -10,6 +11,7 @@ const sessionManager = require("../sessions/sessionManager");
 const countrySession = require("../sessions/countrySession");
 const serverSession = require("../sessions/serverSession");
 const serverEditSession = require("../sessions/serverEditSession");
+const planSession = require("../sessions/planSession");
 
 const routes = {
   // User
@@ -34,11 +36,14 @@ const routes = {
   // Country
   ["➕ افزودن کشور"]: countryController.addCountry,
   ["📋 لیست کشورها"]: countryController.listCountries,
-  // ["❌ لغو"]: countryController.cancel,
 
   // Server
   ["➕ افزودن سرور"]: serverController.addServer,
   ["📋 لیست سرورها"]: serverController.listServers,
+
+  // Plan
+  ["➕ افزودن پلن"]: planController.addPlan,
+  ["📋 لیست پلن‌ها"]: planController.listPlans,
 
   ["⬅️ بازگشت"]: adminController.back,
 };
@@ -60,6 +65,9 @@ module.exports = async (ctx) => {
 
       case "SERVER_EDIT":
         return serverController.cancel(ctx);
+
+      case "PLAN":
+        return planSession(ctx, currentSession);
     }
   }
 

@@ -11,8 +11,12 @@ module.exports = {
   EDIT_NAME: "EDIT_NAME",
   EDIT_REMARK: "EDIT_REMARK",
 
+  // Plan
+  DAYS: "DAYS",
+  TRAFFIC: "TRAFFIC",
+  PRICE: "PRICE",
+
   // General
   DESCRIPTION: "DESCRIPTION",
-  PRICE: "PRICE",
   CONFIRM: "CONFIRM",
 };
