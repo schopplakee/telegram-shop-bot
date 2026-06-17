@@ -1,12 +1,16 @@
 const adminKeyboard = require("../keyboards/adminKeyboard");
 const countryAdminKeyboard = require("../keyboards/countryAdminKeyboard");
+const sessionManager = require("../sessions/sessionManager");
+
+async function back(ctx) {
+  await sessionManager.clear(ctx.from.id);
+
+  return ctx.reply("👑 پنل مدیریت", adminKeyboard);
+}
 
 module.exports = {
   async countries(ctx) {
-    return ctx.reply(
-      "🌍 مدیریت کشورها",
-      countryAdminKeyboard,
-    );
+    return ctx.reply("🌍 مدیریت کشورها", countryAdminKeyboard);
   },
 
   async servers(ctx) {
@@ -41,10 +45,5 @@ module.exports = {
     return ctx.reply("📨 پیام همگانی");
   },
 
-  async back(ctx) {
-    return ctx.reply(
-      "👑 پنل مدیریت",
-      adminKeyboard,
-    );
-  },
+  back
 };

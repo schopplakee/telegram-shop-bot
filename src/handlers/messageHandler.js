@@ -60,4 +60,6 @@ module.exports = async (ctx) => {
     case "COUNTRY":
       return countrySession(ctx, currentSession);
   }
+
+  console.log(ctx.message.text);
 };
