@@ -1,6 +1,7 @@
 const menuController = require("../controllers/menuController");
 const adminController = require("../controllers/adminController");
 const countryController = require("../controllers/countryController");
+const serverController = require("../controllers/serverController");
 
 const MENU = require("../constants/menu");
 const ADMIN = require("../constants/adminMenu");
@@ -32,6 +33,11 @@ const routes = {
   ["➕ افزودن کشور"]: countryController.addCountry,
   ["📋 لیست کشورها"]: countryController.listCountries,
   ["❌ لغو"]: countryController.cancel,
+
+  // Server
+  ["➕ افزودن سرور"]: serverController.addServer,
+  ["📋 لیست سرورها"]: serverController.listServers,
+
   ["⬅️ بازگشت"]: adminController.back,
 };
 

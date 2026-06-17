@@ -1,17 +1,59 @@
 const prisma = require("../config/prisma");
 
-async function getServersByCountry(countryId) {
+async function getAllServers() {
   return prisma.server.findMany({
-    where: {
-      countryId,
-      isActive: true,
+    include: {
+      country: true,
+      panel: true,
     },
+
     orderBy: {
-      name: "asc",
+      id: "asc",
+    },
+  });
+}
+
+async function getServer(id) {
+  return prisma.server.findUnique({
+    where: {
+      id,
+    },
+
+    include: {
+      country: true,
+      panel: true,
+    },
+  });
+}
+
+async function createServer(data) {
+  return prisma.server.create({
+    data,
+  });
+}
+
+async function updateServer(id, data) {
+  return prisma.server.update({
+    where: {
+      id,
+    },
+
+    data,
+  });
+}
+
+async function deleteServer(id) {
+  return prisma.server.delete({
+    where: {
+      id,
     },
   });
 }
 
 module.exports = {
-  getServersByCountry,
+  getAllServers,
+  getServer,
+  createServer,
+  updateServer,
+  deleteServer,
 };
