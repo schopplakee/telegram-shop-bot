@@ -48,7 +48,7 @@ model Server {
   name        String
 
   countryId   Int
-  panelId     Int
+  panelId     Int?
 
   inboundId   Int
 
@@ -59,7 +59,7 @@ model Server {
   createdAt   DateTime @default(now())
 
   country      Country @relation(fields: [countryId], references: [id])
-  panel        Panel   @relation(fields: [panelId], references: [id])
+  panel        Panel?   @relation(fields: [panelId], references: [id])
 
   plans        Plan[]
   services     Service[]

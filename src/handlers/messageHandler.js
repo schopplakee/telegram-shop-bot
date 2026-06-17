@@ -8,6 +8,7 @@ const ADMIN = require("../constants/adminMenu");
 
 const sessionManager = require("../sessions/sessionManager");
 const countrySession = require("../sessions/countrySession");
+const serverSession = require("../sessions/serverSession");
 
 const routes = {
   // User
@@ -80,7 +81,8 @@ module.exports = async (ctx) => {
   switch (currentSession.module) {
     case "COUNTRY":
       return countrySession(ctx, currentSession);
-  }
 
-  console.log(ctx.message.text);
+    case "SERVER":
+      return serverSession(ctx, currentSession);
+  }
 };
