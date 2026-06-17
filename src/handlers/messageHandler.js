@@ -32,7 +32,7 @@ const routes = {
   // Country
   ["➕ افزودن کشور"]: countryController.addCountry,
   ["📋 لیست کشورها"]: countryController.listCountries,
-  ["❌ لغو"]: countryController.cancel,
+  // ["❌ لغو"]: countryController.cancel,
 
   // Server
   ["➕ افزودن سرور"]: serverController.addServer,
@@ -43,6 +43,20 @@ const routes = {
 
 module.exports = async (ctx) => {
   const text = ctx.message?.text;
+
+  if (text === "❌ لغو") {
+    const session = await sessionManager.get(ctx.from.id);
+
+    if (!session) return;
+
+    switch (session.module) {
+      case "COUNTRY":
+        return countryController.cancel(ctx);
+
+      case "SERVER":
+        return serverController.cancel(ctx);
+    }
+  }
 
   const session = await sessionManager.get(ctx.from.id);
 

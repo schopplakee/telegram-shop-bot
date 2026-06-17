@@ -34,20 +34,15 @@ module.exports = {
     const servers = await serverService.getServers();
 
     if (!servers.length) {
-      return ctx.reply(
-        "❌ هنوز سروری ثبت نشده است.",
-        serverAdminKeyboard,
-      );
+      return ctx.reply("❌ هنوز سروری ثبت نشده است.", serverAdminKeyboard);
     }
 
-    return ctx.reply(
-      "🖥 سرورهای ثبت شده:",
-      serverListKeyboard(servers),
-    );
+    return ctx.reply("🖥 سرورهای ثبت شده:", serverListKeyboard(servers));
   },
 
   async cancel(ctx) {
     await sessionManager.clear(ctx.from.id);
+
     return ctx.reply(
       "🖥 مدیریت سرورها",
       serverAdminKeyboard,
