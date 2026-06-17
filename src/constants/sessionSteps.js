@@ -1,15 +1,16 @@
 module.exports = {
+  // Country
+  NAME: "NAME",
+  CODE: "CODE",
+  FLAG: "FLAG",
 
-    NAME: "NAME",
+  // Server
+  COUNTRY: "COUNTRY",
+  INBOUND: "INBOUND",
+  REMARK: "REMARK",
 
-    CODE: "CODE",
-
-    FLAG: "FLAG",
-
-    DESCRIPTION: "DESCRIPTION",
-
-    PRICE: "PRICE",
-
-    CONFIRM: "CONFIRM"
-
+  // General
+  DESCRIPTION: "DESCRIPTION",
+  PRICE: "PRICE",
+  CONFIRM: "CONFIRM",
 };
