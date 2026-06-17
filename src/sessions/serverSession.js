@@ -2,6 +2,9 @@ const sessionManager = require("./sessionManager");
 const serverService = require("../services/serverService");
 const SESSION_STEPS = require("../constants/sessionSteps");
 
+const countryService = require("../services/countryService");
+const serverCountryKeyboard = require("../keyboards/serverCountryKeyboard");
+
 module.exports = async (ctx, session) => {
   const text = ctx.message.text;
 
@@ -17,7 +20,13 @@ module.exports = async (ctx, session) => {
         },
       );
 
-      return ctx.reply("🌍 شناسه کشور را وارد کنید.\n\n(فعلاً عدد ID کشور)");
+      const countries = await countryService.getCountries();
+
+      return ctx.reply(
+        "🌍 کشور سرور را انتخاب کنید.",
+
+        serverCountryKeyboard(countries),
+      );
     }
 
     case SESSION_STEPS.COUNTRY: {

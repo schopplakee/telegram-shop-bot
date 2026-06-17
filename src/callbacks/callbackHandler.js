@@ -132,5 +132,25 @@ module.exports = async (ctx) => {
         );
       });
     }
+
+    case "admin_server_country": {
+      const session = await require("../sessions/sessionManager").get(
+        ctx.from.id,
+      );
+
+      await require("../sessions/sessionManager").next(
+        ctx.from.id,
+
+        "INBOUND",
+
+        {
+          ...session.data,
+
+          countryId: Number(id),
+        },
+      );
+
+      return ctx.editMessageText("🔌 Inbound ID را وارد کنید.");
+    }
   }
 };
