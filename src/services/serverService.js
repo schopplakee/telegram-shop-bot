@@ -17,7 +17,7 @@ async function deleteServer(id) {
 }
 
 async function updateServer(id, data) {
-  return repository.updateServer(id, data);
+  return serverRepository.updateServer(id, data);
 }
 
 module.exports = {
