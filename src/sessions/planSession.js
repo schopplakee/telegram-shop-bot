@@ -66,6 +66,8 @@ module.exports = async (ctx, session) => {
 
       await sessionManager.clear(ctx.from.id);
 
-      return ctx.reply("✅ پلن با موفقیت ثبت شد.");
+      const planAdminKeyboard = require("../keyboards/planAdminKeyboard");
+
+      return ctx.reply("✅ پلن با موفقیت ثبت شد.", planAdminKeyboard);
   }
 };

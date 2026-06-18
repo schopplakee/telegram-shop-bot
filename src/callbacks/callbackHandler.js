@@ -9,6 +9,9 @@ const serverListKeyboard = require("../keyboards/serverListKeyboard");
 const planListKeyboard = require("../keyboards/planListKeyboard");
 const planAdminKeyboard = require("../keyboards/planAdminKeyboard");
 
+const { serverKeyboard } = require("../keyboards/serverKeyboard");
+const { planKeyboard } = require("../keyboards/planKeyboard");
+
 const planController = require("../controllers/planController");
 
 module.exports = async (ctx) => {
