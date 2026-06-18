@@ -1,21 +1,11 @@
 const { Markup } = require("telegraf");
 
-module.exports = (servers, action = "admin_server") => {
+module.exports = (servers) => {
   const rows = servers.map((server) => [
-    Markup.button.callback(
-      server.name,
-
-      `${action}:${server.id}`,
-    ),
+    Markup.button.callback(server.name, `admin_server:${server.id}`),
   ]);
 
-  rows.push([
-    Markup.button.callback(
-      "⬅️ بازگشت",
-
-      `${action}_back`,
-    ),
-  ]);
+  rows.push([Markup.button.callback("⬅️ بازگشت", "admin_server_back")]);
 
   return Markup.inlineKeyboard(rows);
 };

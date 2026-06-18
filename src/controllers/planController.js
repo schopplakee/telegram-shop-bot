@@ -16,9 +16,9 @@ module.exports = {
       const servers = await serverService.getServers();
 
       return ctx.reply(
-        "🖥 ابتدا سرور را انتخاب کنید:",
+        "🖥 ابتدا سرور را انتخاب کنید.",
 
-        serverListKeyboard(servers, "plan_add"),
+        require("../keyboards/serverSelectKeyboard")(servers),
       );
     }
 

@@ -480,5 +480,13 @@ module.exports = async (ctx) => {
         Number(id),
       );
     }
+
+    case "plan_select_server": {
+      return planController.addPlan(
+        ctx,
+
+        Number(id),
+      );
+    }
   }
 };
