@@ -164,7 +164,7 @@ module.exports = async (ctx) => {
       const server = await serverService.getServer(Number(id));
 
       console.log(server.id);
-      
+
       return ctx.editMessageText(
         `🖥 ${server.name}
 
@@ -279,35 +279,39 @@ module.exports = async (ctx) => {
     case "admin_server_plans": {
       const plans = await planService.getPlans(Number(id));
 
-      if (!plans.length) {
-        return ctx.editMessageText(
-          "📦 هنوز پلنی ثبت نشده است.",
+      return ctx.editMessageText(
+        "📦 مدیریت پلن‌ها",
 
-          {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text: "➕ افزودن پلن",
+        {
+          reply_markup: {
+            inline_keyboard: [
+              ...plans.map((plan) => [
+                {
+                  text: `${plan.name} | ${plan.days} روز | ${plan.traffic}GB`,
 
-                    callback_data: `admin_plan_add:${id}`,
-                  },
-                ],
+                  callback_data: `admin_plan:${plan.id}`,
+                },
+              ]),
 
-                [
-                  {
-                    text: "⬅️ بازگشت",
+              [
+                {
+                  text: "➕ افزودن پلن",
 
-                    callback_data: "admin_server_list",
-                  },
-                ],
+                  callback_data: `admin_plan_add:${id}`,
+                },
               ],
-            },
-          },
-        );
-      }
 
-      return ctx.editMessageText("📦 پلن‌های سرور:", planListKeyboard(plans));
+              [
+                {
+                  text: "⬅️ بازگشت",
+
+                  callback_data: `admin_server:${id}`,
+                },
+              ],
+            ],
+          },
+        },
+      );
     }
 
     case "admin_plan_add": {
@@ -349,7 +353,7 @@ module.exports = async (ctx) => {
                 {
                   text: "⬅️ بازگشت",
 
-                  callback_data: `admin_server_plans:${plan.serverId}`,
+                  callback_data: `admin_plan_back:${plan.id}`,
                 },
               ],
             ],
@@ -365,48 +369,78 @@ module.exports = async (ctx) => {
 
       const plans = await planService.getPlans(plan.serverId);
 
-      if (!plans.length) {
-        return ctx.editMessageText(
-          "❌ هیچ پلنی ثبت نشده است.",
-
-          {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text: "➕ افزودن پلن",
-
-                    callback_data: `admin_plan_add:${plan.serverId}`,
-                  },
-                ],
-
-                [
-                  {
-                    text: "⬅️ بازگشت",
-
-                    callback_data: "admin_plan_back",
-                  },
-                ],
-              ],
-            },
-          },
-        );
-      }
-
       return ctx.editMessageText(
-        "📦 پلن‌های سرور:",
+        "📦 مدیریت پلن‌ها",
 
-        planListKeyboard(plans),
+        {
+          reply_markup: {
+            inline_keyboard: [
+              ...plans.map((item) => [
+                {
+                  text: `${item.name} | ${item.days} روز | ${item.traffic}GB`,
+
+                  callback_data: `admin_plan:${item.id}`,
+                },
+              ]),
+
+              [
+                {
+                  text: "➕ افزودن پلن",
+
+                  callback_data: `admin_plan_add:${plan.serverId}`,
+                },
+              ],
+
+              [
+                {
+                  text: "⬅️ بازگشت",
+
+                  callback_data: `admin_server:${plan.serverId}`,
+                },
+              ],
+            ],
+          },
+        },
       );
     }
 
     case "admin_plan_back": {
-      await ctx.deleteMessage();
+      const plan = await planService.getPlan(Number(id));
 
-      return ctx.reply(
-        "🖥 مدیریت سرورها",
+      const plans = await planService.getPlans(plan.serverId);
 
-        require("../keyboards/serverAdminKeyboard"),
+      return ctx.editMessageText(
+        "📦 مدیریت پلن‌ها",
+
+        {
+          reply_markup: {
+            inline_keyboard: [
+              ...plans.map((plan) => [
+                {
+                  text: `${plan.name} | ${plan.days} روز | ${plan.traffic}GB`,
+
+                  callback_data: `admin_plan:${plan.id}`,
+                },
+              ]),
+
+              [
+                {
+                  text: "➕ افزودن پلن",
+
+                  callback_data: `admin_plan_add:${plan.serverId}`,
+                },
+              ],
+
+              [
+                {
+                  text: "⬅️ بازگشت",
+
+                  callback_data: `admin_server:${plan.serverId}`,
+                },
+              ],
+            ],
+          },
+        },
       );
     }
 

@@ -1,19 +1,16 @@
 const sessionManager = require("./sessionManager");
-const SESSION_STEPS = require("../constants/sessionSteps");
-
 const planService = require("../services/planService");
-
-const planAdminKeyboard = require("../keyboards/planAdminKeyboard");
+const SESSION_STEPS = require("../constants/sessionSteps");
 
 module.exports = async (ctx, session) => {
   const text = ctx.message.text;
 
   switch (session.step) {
-    case SESSION_STEPS.NAME: {
+    case SESSION_STEPS.NAME:
       await sessionManager.next(
         ctx.from.id,
 
-        SESSION_STEPS.DAYS,
+        "DAYS",
 
         {
           ...session.data,
@@ -23,73 +20,52 @@ module.exports = async (ctx, session) => {
       );
 
       return ctx.reply("📅 تعداد روز را وارد کنید.");
-    }
 
-    case SESSION_STEPS.DAYS: {
-      const days = Number(text);
-
-      if (isNaN(days) || days <= 0) {
-        return ctx.reply("❌ تعداد روز معتبر نیست.");
-      }
-
+    case "DAYS":
       await sessionManager.next(
         ctx.from.id,
 
-        SESSION_STEPS.TRAFFIC,
+        "TRAFFIC",
 
         {
           ...session.data,
 
-          days,
+          days: Number(text),
         },
       );
 
       return ctx.reply("🌐 حجم (GB) را وارد کنید.");
-    }
 
-    case SESSION_STEPS.TRAFFIC: {
-      const traffic = Number(text);
-
-      if (isNaN(traffic) || traffic <= 0) {
-        return ctx.reply("❌ حجم معتبر نیست.");
-      }
-
+    case "TRAFFIC":
       await sessionManager.next(
         ctx.from.id,
 
-        SESSION_STEPS.PRICE,
+        "PRICE",
 
         {
           ...session.data,
 
-          traffic,
+          traffic: Number(text),
         },
       );
 
       return ctx.reply("💰 قیمت را وارد کنید.");
-    }
 
-    case SESSION_STEPS.PRICE: {
-      const price = Number(text);
-
-      if (isNaN(price) || price < 0) {
-        return ctx.reply("❌ قیمت معتبر نیست.");
-      }
-
+    case "PRICE":
       await planService.createPlan({
         serverId: session.data.serverId,
+
         name: session.data.name,
+
         days: session.data.days,
+
         traffic: session.data.traffic,
-        price,
+
+        price: Number(text),
       });
 
       await sessionManager.clear(ctx.from.id);
 
-      return ctx.reply(
-        "✅ پلن با موفقیت ثبت شد.",
-        planAdminKeyboard,
-      );
-    }
+      return ctx.reply("✅ پلن با موفقیت ثبت شد.");
   }
 };
