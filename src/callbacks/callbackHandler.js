@@ -163,6 +163,8 @@ module.exports = async (ctx) => {
     case "admin_server": {
       const server = await serverService.getServer(Number(id));
 
+      console.log(server.id);
+      
       return ctx.editMessageText(
         `🖥 ${server.name}
 
