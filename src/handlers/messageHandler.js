@@ -10,8 +10,10 @@ const ADMIN = require("../constants/adminMenu");
 const sessionManager = require("../sessions/sessionManager");
 const countrySession = require("../sessions/countrySession");
 const serverSession = require("../sessions/serverSession");
-const serverEditSession = require("../sessions/serverEditSession");
 const planSession = require("../sessions/planSession");
+
+const serverEditSession = require("../sessions/serverEditSession");
+const planEditSession = require("../sessions/planEditSession");
 
 const routes = {
   // User
@@ -67,7 +69,10 @@ module.exports = async (ctx) => {
         return serverController.cancel(ctx);
 
       case "PLAN":
-        return planSession(ctx, currentSession);
+        return planController.cancel(ctx);
+
+      case "PLAN_EDIT":
+        return planController.cancel(ctx);
     }
   }
 
@@ -99,5 +104,11 @@ module.exports = async (ctx) => {
 
     case "SERVER_EDIT":
       return serverEditSession(ctx, currentSession);
+
+    case "PLAN":
+      return planSession(ctx, currentSession);
+
+    case "PLAN_EDIT":
+      return planEditSession(ctx, currentSession);
   }
 };

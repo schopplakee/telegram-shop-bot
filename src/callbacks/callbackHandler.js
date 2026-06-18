@@ -6,6 +6,10 @@ const countryService = require("../services/countryService");
 
 const countryListKeyboard = require("../keyboards/countryListKeyboard");
 const serverListKeyboard = require("../keyboards/serverListKeyboard");
+const planListKeyboard = require("../keyboards/planListKeyboard");
+const planAdminKeyboard = require("../keyboards/planAdminKeyboard");
+
+const planController = require("../controllers/planController");
 
 module.exports = async (ctx) => {
   const data = ctx.callbackQuery.data;
@@ -266,6 +270,166 @@ module.exports = async (ctx) => {
 
       return ctx.reply(
         "✏️ نام جدید سرور را وارد کنید.",
+        require("../keyboards/cancelKeyboard"),
+      );
+    }
+
+    case "admin_server_plans": {
+      const plans = await planService.getPlans(Number(id));
+
+      if (!plans.length) {
+        return ctx.editMessageText(
+          "📦 هنوز پلنی ثبت نشده است.",
+
+          {
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: "➕ افزودن پلن",
+
+                    callback_data: `admin_plan_add:${id}`,
+                  },
+                ],
+
+                [
+                  {
+                    text: "⬅️ بازگشت",
+
+                    callback_data: "admin_server_list",
+                  },
+                ],
+              ],
+            },
+          },
+        );
+      }
+
+      return ctx.editMessageText("📦 پلن‌های سرور:", planListKeyboard(plans));
+    }
+
+    case "admin_plan_add": {
+      return planController.addPlan(ctx, Number(id));
+    }
+
+    case "admin_plan": {
+      const plan = await planService.getPlan(Number(id));
+
+      return ctx.editMessageText(
+        `📦 ${plan.name}
+
+📅 ${plan.days} روز
+
+🌐 ${plan.traffic} GB
+
+💰 ${plan.price.toLocaleString()} تومان`,
+
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: "✏️ ویرایش",
+
+                  callback_data: `admin_plan_edit:${plan.id}`,
+                },
+              ],
+
+              [
+                {
+                  text: "❌ حذف",
+
+                  callback_data: `admin_plan_delete:${plan.id}`,
+                },
+              ],
+
+              [
+                {
+                  text: "⬅️ بازگشت",
+
+                  callback_data: `admin_server_plans:${plan.serverId}`,
+                },
+              ],
+            ],
+          },
+        },
+      );
+    }
+
+    case "admin_plan_delete": {
+      const plan = await planService.getPlan(Number(id));
+
+      await planService.deletePlan(plan.id);
+
+      const plans = await planService.getPlans(plan.serverId);
+
+      if (!plans.length) {
+        return ctx.editMessageText(
+          "❌ هیچ پلنی ثبت نشده است.",
+
+          {
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: "➕ افزودن پلن",
+
+                    callback_data: `admin_plan_add:${plan.serverId}`,
+                  },
+                ],
+
+                [
+                  {
+                    text: "⬅️ بازگشت",
+
+                    callback_data: "admin_plan_back",
+                  },
+                ],
+              ],
+            },
+          },
+        );
+      }
+
+      return ctx.editMessageText(
+        "📦 پلن‌های سرور:",
+
+        planListKeyboard(plans),
+      );
+    }
+
+    case "admin_plan_back": {
+      await ctx.deleteMessage();
+
+      return ctx.reply(
+        "🖥 مدیریت سرورها",
+
+        require("../keyboards/serverAdminKeyboard"),
+      );
+    }
+
+    case "admin_plan_edit": {
+      const plan = await planService.getPlan(Number(id));
+
+      const sessionManager = require("../sessions/sessionManager");
+
+      await sessionManager.start(
+        ctx.from.id,
+
+        "PLAN_EDIT",
+
+        "EDIT_NAME",
+
+        {
+          planId: plan.id,
+        },
+      );
+
+      await ctx.deleteMessage();
+
+      return ctx.reply(
+        "✏️ نام جدید پلن را وارد کنید.",
+
         require("../keyboards/cancelKeyboard"),
       );
     }

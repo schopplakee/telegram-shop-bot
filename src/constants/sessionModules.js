@@ -6,6 +6,8 @@ module.exports = {
 
     PLAN: "PLAN",
 
+    PLAN_EDIT: "PLAN_EDIT",
+
     PAYMENT: "PAYMENT",
 
     BROADCAST: "BROADCAST"
