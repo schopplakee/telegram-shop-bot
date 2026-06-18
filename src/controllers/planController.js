@@ -8,21 +8,34 @@ const SESSION_STEPS = require("../constants/sessionSteps");
 const cancelKeyboard = require("../keyboards/cancelKeyboard");
 const planAdminKeyboard = require("../keyboards/planAdminKeyboard");
 const planListKeyboard = require("../keyboards/planListKeyboard");
+const serverListKeyboard = require("../keyboards/serverListKeyboard");
 
 module.exports = {
-  async addPlan(ctx, serverId) {
+  async addPlan(ctx, serverId = null) {
+    if (!serverId) {
+      const servers = await serverService.getServers();
+
+      return ctx.reply(
+        "🖥 ابتدا سرور را انتخاب کنید:",
+
+        serverListKeyboard(servers, "plan_add"),
+      );
+    }
+
     await sessionManager.start(
       ctx.from.id,
 
-      SESSION_MODULES.PLAN,
+      "PLAN",
 
       SESSION_STEPS.NAME,
 
-      { serverId },
+      {
+        serverId,
+      },
     );
 
     return ctx.reply(
-      "📦 نام پلن را وارد کنید.",
+      "📝 نام پلن را وارد کنید.",
 
       cancelKeyboard,
     );
@@ -45,9 +58,6 @@ module.exports = {
   async cancel(ctx) {
     await sessionManager.clear(ctx.from.id);
 
-    return ctx.reply(
-      "📦 مدیریت پلن‌ها",
-      planAdminKeyboard,
-    );
+    return ctx.reply("📦 مدیریت پلن‌ها", planAdminKeyboard);
   },
 };

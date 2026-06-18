@@ -472,5 +472,13 @@ module.exports = async (ctx) => {
         require("../keyboards/cancelKeyboard"),
       );
     }
+
+    case "plan_add": {
+      return planController.addPlan(
+        ctx,
+
+        Number(id),
+      );
+    }
   }
 };

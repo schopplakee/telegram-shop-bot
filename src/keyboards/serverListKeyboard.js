@@ -1,11 +1,11 @@
 const { Markup } = require("telegraf");
 
-module.exports = (servers) => {
+module.exports = (servers, action = "admin_server") => {
   const rows = servers.map((server) => [
     Markup.button.callback(
       server.name,
 
-      `admin_server:${server.id}`,
+      `${action}:${server.id}`,
     ),
   ]);
 
@@ -13,7 +13,7 @@ module.exports = (servers) => {
     Markup.button.callback(
       "⬅️ بازگشت",
 
-      "admin_server_back",
+      `${action}_back`,
     ),
   ]);
 
