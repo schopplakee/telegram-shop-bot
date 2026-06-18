@@ -47,7 +47,6 @@ module.exports = {
 
     return ctx.reply(
       "📦 مدیریت پلن‌ها",
-
       planAdminKeyboard,
     );
   },

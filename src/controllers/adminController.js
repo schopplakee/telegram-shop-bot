@@ -4,6 +4,10 @@ const sessionManager = require("../sessions/sessionManager");
 const countryAdminKeyboard = require("../keyboards/countryAdminKeyboard");
 const serverAdminKeyboard = require("../keyboards/serverAdminKeyboard");
 
+// Test
+const planAdminKeyboard = require("../keyboards/planAdminKeyboard");
+
+
 async function back(ctx) {
   await sessionManager.clear(ctx.from.id);
 
@@ -20,7 +24,7 @@ module.exports = {
   },
 
   async plans(ctx) {
-    return ctx.reply("📦 مدیریت پلن‌ها");
+    return ctx.reply("📦 مدیریت پلن‌ها", planAdminKeyboard);
   },
 
   async users(ctx) {
