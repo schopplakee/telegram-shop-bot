@@ -11,6 +11,6 @@ module.exports = {
     
     PAYMENT: "PAYMENT",
 
-    BROADCAST: "BROADCAST"
+    BROADCAST: "BROADCAST",
 
 };

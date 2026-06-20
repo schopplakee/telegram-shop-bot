@@ -3,7 +3,7 @@ require("dotenv").config();
 const xui = require("./src/services/xuiService");
 
 (async () => {
-  const cookie = await xui.login();
+  const result = await xui.deleteClient("telegram-test");
 
-  console.log("COOKIE:", cookie);
+  console.log(result);
 })();

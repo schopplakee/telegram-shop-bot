@@ -8,11 +8,13 @@ const countryListKeyboard = require("../keyboards/countryListKeyboard");
 const serverListKeyboard = require("../keyboards/serverListKeyboard");
 const planListKeyboard = require("../keyboards/planListKeyboard");
 const planAdminKeyboard = require("../keyboards/planAdminKeyboard");
+const paymentKeyboard = require("../keyboards/paymentKeyboard");
 
 const { serverKeyboard } = require("../keyboards/serverKeyboard");
 const { planKeyboard } = require("../keyboards/planKeyboard");
 
 const planController = require("../controllers/planController");
+const paymentController = require("../controllers/paymentController");
 
 module.exports = async (ctx) => {
   const data = ctx.callbackQuery.data;
@@ -50,9 +52,24 @@ module.exports = async (ctx) => {
 
     case ACTION.PLAN: {
       return ctx.editMessageText(
-        `✅ پلن شماره ${id} انتخاب شد.\n\nمرحله بعد: انتخاب روش پرداخت`,
+        `✅ پلن شماره ${plan.id} انتخاب شد.
+
+مرحله بعد: انتخاب روش پرداخت`,
+
+        paymentKeyboard,
       );
     }
+
+    // Payment
+
+    case "payment_gateway":
+      return paymentController.gateway(ctx);
+
+    case "payment_card":
+      return paymentController.card(ctx);
+
+    case "payment_wallet":
+      return paymentController.wallet(ctx);
 
     // ==========================
     // ADMIN COUNTRY
