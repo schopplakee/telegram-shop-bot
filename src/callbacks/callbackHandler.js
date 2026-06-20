@@ -51,6 +51,7 @@ module.exports = async (ctx) => {
     }
 
     case ACTION.PLAN: {
+      const plan = await planService.getPlan(Number(id));
       return ctx.editMessageText(
         `✅ پلن شماره ${plan.id} انتخاب شد.
 
