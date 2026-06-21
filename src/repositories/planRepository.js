@@ -1,21 +1,15 @@
-const prisma = require("../config/prisma");
+const { PrismaClient } = require("@prisma/client");
 
-async function createPlan(data) {
-  return prisma.plan.create({
-    data,
-  });
-}
+const prisma = new PrismaClient();
 
 async function getPlans(serverId) {
   return prisma.plan.findMany({
     where: {
       serverId,
-
       isActive: true,
     },
-
     orderBy: {
-      price: "asc",
+      id: "asc",
     },
   });
 }
@@ -23,8 +17,27 @@ async function getPlans(serverId) {
 async function getPlan(id) {
   return prisma.plan.findUnique({
     where: {
-      id: Number(id)
+      id,
     },
+
+    include: {
+      server: true,
+    },
+  });
+}
+
+async function createPlan(data) {
+  return prisma.plan.create({
+    data,
+  });
+}
+
+async function updatePlan(id, data) {
+  return prisma.plan.update({
+    where: {
+      id,
+    },
+    data,
   });
 }
 
@@ -36,20 +49,10 @@ async function deletePlan(id) {
   });
 }
 
-async function updatePlan(id, data) {
-  return prisma.plan.update({
-    where: {
-      id,
-    },
-
-    data,
-  });
-}
-
 module.exports = {
-  createPlan,
   getPlans,
   getPlan,
-  deletePlan,
+  createPlan,
   updatePlan,
+  deletePlan,
 };

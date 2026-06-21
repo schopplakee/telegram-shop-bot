@@ -53,7 +53,7 @@ module.exports = async (ctx) => {
 
     case ACTION.PLAN: {
       const plan = await planService.getPlan(Number(id));
-
+      
       await sessionManager.start(
         ctx.from.id,
 
