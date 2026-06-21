@@ -72,15 +72,15 @@ module.exports = {
       status: "SUCCESS",
     });
 
-    const result = await xuiService.createClient({
-      inboundId: (await serverService.getServer(serverId)).inboundId,
+    // const result = await xuiService.createClient({
+    //   inboundId: (await serverService.getServer(serverId)).inboundId,
 
-      email: Math.random().toString(36).substring(2, 10),
+    //   email: Math.random().toString(36).substring(2, 10),
 
-      totalGB: plan.traffic * 1024 * 1024 * 1024,
+    //   totalGB: plan.traffic * 1024 * 1024 * 1024,
 
-      expiryTime: Date.now() + plan.days * 24 * 60 * 60 * 1000,
-    });
+    //   expiryTime: Date.now() + plan.days * 24 * 60 * 60 * 1000,
+    // });
 
     await clientService.create({
       userId: user.id,
