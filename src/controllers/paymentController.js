@@ -2,12 +2,11 @@ const paymentKeyboard = require("../keyboards/paymentKeyboard");
 
 const userService = require("../services/userService");
 const planService = require("../services/planService");
-const serviceService = require("../services/serviceService");
 const walletService = require("../services/walletService");
 const xuiService = require("../services/xuiService");
 // const serverService = require("../services/serverService");
 const orderService = require("../services/orderService");
-const clientService = require("../services/clientService");
+// const clientService = require("../services/clientService");
 
 const sessionManager = require("../sessions/sessionManager");
 
@@ -82,35 +81,33 @@ module.exports = {
     //   expiryTime: Date.now() + plan.days * 24 * 60 * 60 * 1000,
     // });
 
-    await clientService.create({
-      userId: user.id,
+    // await clientService.create({
+    //   userId: user.id,
 
-      serverId,
+    //   serverId,
 
-      planId,
+    //   planId,
 
-      uuid: result.client.id,
+    //   uuid: result.client.id,
 
-      email: result.client.email,
+    //   email: result.client.email,
 
-      subscriptionUrl: "",
+    //   subscriptionUrl: "",
 
-      expireAt: new Date(result.client.expiryTime),
+    //   expireAt: new Date(result.client.expiryTime),
 
-      trafficLimit: result.client.totalGB,
-    });
+    //   trafficLimit: result.client.totalGB,
+    // });
 
     await sessionManager.clear(ctx.from.id);
 
     return ctx.editMessageText(
       `✅ سرویس شما ساخته شد.
 
-📧 ${result.client.email}
-
-🆔 ${result.client.id}
+// 📧 ${result.client.email}
+// 🆔 ${result.client.id}
 
 به زودی لینک اتصال نیز نمایش داده خواهد شد.`,
     );
   },
-  
 };
