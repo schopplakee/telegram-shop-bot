@@ -19,6 +19,27 @@ async function createOrUpdateUser(user) {
   });
 }
 
+async function getByTelegramId(telegramId) {
+  return prisma.user.findUnique({
+    where: {
+      telegramId: String(telegramId),
+    },
+  });
+}
+
+async function updateBalance(userId, balance) {
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      balance,
+    },
+  });
+}
+
 module.exports = {
   createOrUpdateUser,
+  getByTelegramId,
+  updateBalance,
 };

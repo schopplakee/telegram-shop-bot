@@ -221,6 +221,40 @@ async function getClient(email) {
   return null;
 }
 
+async function createClient(plan) {
+  const inbounds = await getInbounds();
+
+  const inbound = inbounds.obj.find((i) => i.id === plan.server.inboundId);
+
+  if (!inbound) throw new Error("Inbound Not Found");
+
+  const email = Math.random().toString(36).substring(2, 10);
+
+  const totalGB = plan.traffic * 1024 * 1024 * 1024;
+
+  const expiryTime = Date.now() + plan.days * 24 * 60 * 60 * 1000;
+
+  await addClient(
+    inbound.id,
+
+    {
+      email,
+
+      totalGB,
+
+      expiryTime,
+    },
+  );
+
+  const result = await getClient(email);
+
+  return {
+    inbound,
+
+    client: result.client,
+  };
+}
+
 module.exports = {
   login,
   getInbounds,
@@ -229,4 +263,5 @@ module.exports = {
   updateClient,
   toggleClient,
   getClient,
+  createClient,
 };

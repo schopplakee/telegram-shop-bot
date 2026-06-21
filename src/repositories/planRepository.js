@@ -23,7 +23,7 @@ async function getPlans(serverId) {
 async function getPlan(id) {
   return prisma.plan.findUnique({
     where: {
-      id,
+      id: Number(id)
     },
   });
 }

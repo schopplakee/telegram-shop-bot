@@ -1,9 +1,9 @@
 require("dotenv").config();
 
-const xui = require("./src/services/xuiService");
+const planService = require("./src/services/planService");
 
 (async () => {
-  const result = await xui.deleteClient("telegram-test");
+  const plan = await planService.getPlan(3);
 
-  console.log(result);
+  console.log(plan);
 })();

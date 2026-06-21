@@ -15,6 +15,7 @@ const { planKeyboard } = require("../keyboards/planKeyboard");
 
 const planController = require("../controllers/planController");
 const paymentController = require("../controllers/paymentController");
+const sessionManager = require("../sessions/sessionManager");
 
 module.exports = async (ctx) => {
   const data = ctx.callbackQuery.data;
@@ -52,10 +53,29 @@ module.exports = async (ctx) => {
 
     case ACTION.PLAN: {
       const plan = await planService.getPlan(Number(id));
-      return ctx.editMessageText(
-        `✅ پلن شماره ${plan.id} انتخاب شد.
 
-مرحله بعد: انتخاب روش پرداخت`,
+      await sessionManager.start(
+        ctx.from.id,
+
+        "PURCHASE",
+
+        "PAYMENT",
+
+        {
+          planId: plan.id,
+
+          serverId: plan.serverId,
+
+          countryId: plan.server.countryId,
+
+          inboundId: plan.server.inboundId,
+        },
+      );
+
+      return ctx.editMessageText(
+        `✅ پلن ${plan.name} انتخاب شد.
+
+💳 روش پرداخت را انتخاب کنید.`,
 
         paymentKeyboard,
       );
