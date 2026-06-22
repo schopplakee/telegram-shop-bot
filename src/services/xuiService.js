@@ -212,12 +212,12 @@ async function getClient(email) {
   const inbounds = await getInbounds();
 
   for (const inbound of inbounds.obj) {
-    const client = inbound.settings.clients.find((c) => c.email === email);
+    const stat = inbound.clientStats.find((c) => c.email === email);
 
-    if (client) {
+    if (stat) {
       return {
         inbound,
-        client,
+        client: stat,
       };
     }
   }
