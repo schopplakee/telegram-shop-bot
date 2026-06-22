@@ -28,6 +28,26 @@ async function create(data) {
   });
 }
 
+async function getByUser(userId) {
+  return prisma.service.findMany({
+    where: {
+      userId,
+    },
+    include: {
+      server: {
+        include: {
+          country: true,
+        },
+      },
+      plan: true,
+    },
+    orderBy: {
+      id: "desc",
+    },
+  });
+}
+
 module.exports = {
   create,
+  getByUser,
 };

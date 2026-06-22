@@ -12,7 +12,6 @@ let cookie = null;
 let csrf = null;
 
 async function login() {
-  
   console.log("BaseURL:", client.defaults.baseURL);
 
   if (cookie) return cookie;
@@ -264,7 +263,7 @@ function buildSubscriptionUrl(inbound, client) {
 
   const remark = encodeURIComponent(inbound.remark || inbound.tag || "Server");
 
-  return `${protocol}://${client.id}@${host}:${inbound.port}?type=${network}&security=${tls}#${remark}`;
+  return `${protocol}://${client.id}@${host}:${inbound.port}?encryption=none&type=${network}&security=${tls}#${remark}`;
 }
 
 module.exports = {

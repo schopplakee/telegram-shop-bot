@@ -1,4 +1,5 @@
 const purchaseController = require("./purchaseController");
+const serviceController = require("./serviceController");
 
 async function buyService(ctx) {
   return purchaseController.startPurchase(ctx);
@@ -9,7 +10,7 @@ async function wallet(ctx) {
 }
 
 async function myServices(ctx) {
-  return ctx.reply("👤 هنوز سرویسی برای شما ثبت نشده است.");
+  return serviceController.list(ctx);
 }
 
 async function guide(ctx) {
