@@ -31,6 +31,10 @@ module.exports = async (ctx) => {
     return serviceController.show(ctx, data.split(":")[1]);
   }
 
+  if (data.startsWith("service_refresh:")) {
+    return serviceController.refresh(ctx, data.split(":")[1]);
+  }
+
   switch (action) {
     // ==========================
     // USER

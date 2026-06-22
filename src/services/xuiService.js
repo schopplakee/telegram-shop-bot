@@ -266,6 +266,25 @@ function buildSubscriptionUrl(inbound, client) {
   return `${protocol}://${client.id}@${host}:${inbound.port}?encryption=none&type=${network}&security=${tls}#${remark}`;
 }
 
+async function getClientStats(email) {
+  const result = await getClient(email);
+
+  if (!result) {
+    throw new Error("CLIENT_NOT_FOUND");
+  }
+
+  const inbound = result.inbound;
+  const client = result.client;
+
+  const stat = inbound.clientStats.find((s) => s.email === email);
+
+  return {
+    inbound,
+    client,
+    stat,
+  };
+}
+
 module.exports = {
   login,
   getInbounds,
@@ -276,4 +295,5 @@ module.exports = {
   getClient,
   createClient,
   buildSubscriptionUrl,
+  getClientStats,
 };
