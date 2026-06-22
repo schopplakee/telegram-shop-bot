@@ -17,9 +17,13 @@ async function create(data) {
 
       subscriptionUrl: data.subscriptionUrl,
 
+      status: data.status ?? "ACTIVE",
+
       expireAt: data.expireAt,
 
       trafficLimit: BigInt(data.trafficLimit),
+
+      trafficUsed: BigInt(data.trafficUsed ?? 0),
     },
   });
 }

@@ -1,13 +1,13 @@
-const planService = require("./src/services/planService");
+require("dotenv").config();
+
+const purchaseService = require("./src/services/purchaseService");
 
 (async () => {
-  const plan = await planService.getPlan(4);
+  const result = await purchaseService.purchaseWithWallet(
+    1, // serverId
+    6, // planId
+    1847297788 // telegramId
+  );
 
-  console.log(plan);
-
-  console.log(plan.server);
-
-  console.log(plan.server.countryId);
-
-  console.log(plan.server.inboundId);
+  console.log(result);
 })();

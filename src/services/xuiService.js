@@ -221,38 +221,45 @@ async function getClient(email) {
   return null;
 }
 
-async function createClient(plan) {
+async function createClient(data) {
   const inbounds = await getInbounds();
 
-  const inbound = inbounds.obj.find((i) => i.id === plan.server.inboundId);
+  const inbound = inbounds.obj.find((i) => i.id === Number(data.inboundId));
 
-  if (!inbound) throw new Error("Inbound Not Found");
+  if (!inbound) {
+    throw new Error("Inbound Not Found");
+  }
 
-  const email = Math.random().toString(36).substring(2, 10);
+  await addClient(inbound.id, {
+    email: data.email,
 
-  const totalGB = plan.traffic * 1024 * 1024 * 1024;
+    totalGB: data.totalGB,
 
-  const expiryTime = Date.now() + plan.days * 24 * 60 * 60 * 1000;
+    expiryTime: data.expiryTime,
 
-  await addClient(
-    inbound.id,
+    limitIp: data.limitIp ?? 0,
+  });
 
-    {
-      email,
-
-      totalGB,
-
-      expiryTime,
-    },
-  );
-
-  const result = await getClient(email);
+  const result = await getClient(data.email);
 
   return {
     inbound,
-
     client: result.client,
   };
+}
+
+function buildSubscriptionUrl(inbound, client) {
+  const protocol = "vless";
+
+  const host = new URL(process.env.XUI_URL).hostname;
+
+  const tls = inbound.streamSettings?.security ?? "none";
+
+  const network = inbound.streamSettings?.network ?? "tcp";
+
+  const remark = encodeURIComponent(inbound.remark || inbound.tag || "Server");
+
+  return `${protocol}://${client.id}@${host}:${inbound.port}?type=${network}&security=${tls}#${remark}`;
 }
 
 module.exports = {
@@ -264,4 +271,5 @@ module.exports = {
   toggleClient,
   getClient,
   createClient,
+  buildSubscriptionUrl,
 };

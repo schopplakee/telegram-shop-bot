@@ -8,186 +8,119 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  telegramId  String   @unique
-  username    String?
-  firstName   String?
-  balance     Int      @default(0)
-  createdAt   DateTime @default(now())
-
-  services            Service[]
-  orders              Order[]
-  walletTransactions  WalletTransaction[]
+  id                 Int                 @id @default(autoincrement())
+  telegramId         String              @unique
+  username           String?
+  firstName          String?
+  balance            Int                 @default(0)
+  createdAt          DateTime            @default(now())
+  orders             Order[]
+  services           Service[]
+  walletTransactions WalletTransaction[]
 }
 
 model Panel {
-  id         Int      @id @default(autoincrement())
-  name       String
-  url        String
-  username   String
-  password   String
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  servers    Server[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  url       String
+  username  String
+  password  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  servers   Server[]
 }
 
 model Country {
-  id         Int      @id @default(autoincrement())
-  name       String
-  code       String   @unique
-  flag       String
-  isActive   Boolean  @default(true)
-
-  servers    Server[]
+  id       Int      @id @default(autoincrement())
+  name     String
+  code     String   @unique
+  flag     String
+  isActive Boolean  @default(true)
+  servers  Server[]
 }
 
 model Server {
-  id          Int      @id @default(autoincrement())
-
-  name        String
-
-  countryId   Int
-  panelId     Int?
-
-  inboundId   Int
-
-  remark      String?
-
-  isActive    Boolean  @default(true)
-
-  createdAt   DateTime @default(now())
-
-  country      Country @relation(fields: [countryId], references: [id])
-  panel        Panel?   @relation(fields: [panelId], references: [id])
-
-  plans        Plan[]
-  services     Service[]
+  id        Int       @id @default(autoincrement())
+  name      String
+  countryId Int
+  panelId   Int?
+  inboundId Int
+  remark    String?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  plans     Plan[]
+  country   Country   @relation(fields: [countryId], references: [id])
+  panel     Panel?    @relation(fields: [panelId], references: [id])
+  services  Service[]
 }
 
 model Plan {
-  id          Int      @id @default(autoincrement())
-
-  serverId    Int
-
-  name        String
-
-  days        Int
-
-  traffic     Int
-
-  price       Int
-
-  isActive    Boolean @default(true)
-
-  server       Server @relation(fields:[serverId],references:[id])
-
-  services     Service[]
+  id       Int       @id @default(autoincrement())
+  serverId Int
+  name     String
+  days     Int
+  traffic  Int
+  price    Int
+  isActive Boolean   @default(true)
+  server   Server    @relation(fields: [serverId], references: [id])
+  services Service[]
 }
 
 model Service {
-
-  id Int @id @default(autoincrement())
-
-  userId Int
-
-  serverId Int
-
-  planId Int
-
-  uuid String?
-
-  email String?
-
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  serverId        Int
+  planId          Int
+  uuid            String?
+  email           String?
   subscriptionUrl String?
-
-  status String @default("ACTIVE")
-
-  expireAt DateTime?
-
-  trafficLimit BigInt?
-
-  trafficUsed BigInt @default(0)
-
-  lastOnline DateTime?
-
-  createdAt DateTime @default(now())
-
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields:[userId],references:[id])
-
-  server Server @relation(fields:[serverId],references:[id])
-
-  plan Plan @relation(fields:[planId],references:[id])
-
+  status          String    @default("ACTIVE")
+  expireAt        DateTime?
+  trafficLimit    BigInt?
+  trafficUsed     BigInt    @default(0)
+  lastOnline      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  plan            Plan      @relation(fields: [planId], references: [id])
+  server          Server    @relation(fields: [serverId], references: [id])
+  user            User      @relation(fields: [userId], references: [id])
 }
 
 model Order {
-
-  id Int @id @default(autoincrement())
-
-  userId Int
-
-  amount Int
-
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  amount        Int
   paymentMethod String
-
-  status String
-
-  authority String?
-
-  refId String?
-
-  createdAt DateTime @default(now())
-
-  user User @relation(fields:[userId],references:[id])
-
+  status        String
+  authority     String?
+  refId         String?
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
 }
 
 model WalletTransaction {
-
-  id Int @id @default(autoincrement())
-
-  userId Int
-
-  amount Int
-
-  type String
-
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  amount      Int
+  type        String
   description String?
-
-  createdAt DateTime @default(now())
-
-  user User @relation(fields:[userId],references:[id])
-
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model Setting {
-
-  id Int @id @default(autoincrement())
-
-  key String @unique
-
+  id    Int    @id @default(autoincrement())
+  key   String @unique
   value String
-
 }
 
 model Session {
-
-  id Int @id @default(autoincrement())
-
-  telegramId String @unique
-
-  module String?
-
-  step String?
-
-  data Json?
-
-  createdAt DateTime @default(now())
-
-  updatedAt DateTime @updatedAt
-
+  id         Int      @id @default(autoincrement())
+  telegramId String   @unique
+  step       String?
+  data       Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  module     String?
 }
