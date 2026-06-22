@@ -47,7 +47,25 @@ async function getByUser(userId) {
   });
 }
 
+async function get(id) {
+  return prisma.service.findUnique({
+    where: {
+      id: Number(id),
+    },
+    include: {
+      user: true,
+      server: {
+        include: {
+          country: true,
+        },
+      },
+      plan: true,
+    },
+  });
+}
+
 module.exports = {
   create,
   getByUser,
+  get,
 };

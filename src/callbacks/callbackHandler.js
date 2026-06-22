@@ -16,6 +16,7 @@ const { planKeyboard } = require("../keyboards/planKeyboard");
 const planController = require("../controllers/planController");
 const paymentController = require("../controllers/paymentController");
 const sessionManager = require("../sessions/sessionManager");
+const serviceController = require("../controllers/serviceController");
 
 module.exports = async (ctx) => {
   const data = ctx.callbackQuery.data;
@@ -25,6 +26,10 @@ module.exports = async (ctx) => {
   const [action, id] = data.split(":");
 
   await ctx.answerCbQuery();
+
+  if (data.startsWith("service:")) {
+    return serviceController.show(ctx, data.split(":")[1]);
+  }
 
   switch (action) {
     // ==========================
@@ -53,7 +58,7 @@ module.exports = async (ctx) => {
 
     case ACTION.PLAN: {
       const plan = await planService.getPlan(Number(id));
-      
+
       await sessionManager.start(
         ctx.from.id,
 
