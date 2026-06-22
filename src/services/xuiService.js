@@ -1,6 +1,8 @@
 const axios = require("axios");
 const crypto = require("crypto");
 
+console.log("XUI_URL =", process.env.XUI_URL);
+
 const client = axios.create({
   baseURL: process.env.XUI_URL,
   validateStatus: () => true,
@@ -10,6 +12,9 @@ let cookie = null;
 let csrf = null;
 
 async function login() {
+  
+  console.log("BaseURL:", client.defaults.baseURL);
+
   if (cookie) return cookie;
 
   // Step 1
