@@ -137,6 +137,49 @@ async function qr(ctx, id) {
   );
 }
 
+async function configs(ctx, id) {
+  const service = await clientService.get(id);
+
+  if (!service) {
+    return ctx.answerCbQuery("سرویس پیدا نشد");
+  }
+
+  await ctx.answerCbQuery();
+
+  const text = `📥 کانفیگ‌های سرویس
+
+🔗 Subscription
+
+${service.subscriptionUrl}
+
+━━━━━━━━━━━━━━
+
+📱 برنامه‌های پیشنهادی
+
+🤖 Android
+• Hiddify Next
+• Nekobox
+• v2rayNG
+
+🍏 iPhone
+• Streisand
+• Hiddify Next
+
+🖥 Windows
+• Hiddify Next
+• Nekoray
+
+🍎 macOS
+• Hiddify Next
+
+🐧 Linux
+• Hiddify Next
+
+کافی است لینک بالا را داخل برنامه Import کنید.`;
+
+  return ctx.reply(text);
+}
+
 module.exports = {
   async list(ctx) {
     const user = await userService.getByTelegramId(ctx.from.id);
@@ -154,4 +197,5 @@ module.exports = {
   refresh,
   subscription,
   qr,
+  configs,
 };

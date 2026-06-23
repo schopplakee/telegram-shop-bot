@@ -43,6 +43,10 @@ module.exports = async (ctx) => {
     return serviceController.qr(ctx, data.split(":")[1]);
   }
 
+  if (data.startsWith("service_configs:")) {
+    return serviceController.configs(ctx, data.split(":")[1]);
+  }
+
   switch (action) {
     // ==========================
     // USER
