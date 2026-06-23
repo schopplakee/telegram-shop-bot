@@ -94,6 +94,22 @@ ${stat.enable ? "🟢 فعال" : "🔴 غیرفعال"}
   });
 }
 
+async function subscription(ctx, id) {
+  const service = await clientService.get(id);
+
+  if (!service) {
+    return ctx.answerCbQuery("سرویس پیدا نشد");
+  }
+
+  await ctx.answerCbQuery();
+
+  return ctx.reply(
+    `🔗 لینک اشتراک
+
+${service.subscriptionUrl}`,
+  );
+}
+
 module.exports = {
   async list(ctx) {
     const user = await userService.getByTelegramId(ctx.from.id);
@@ -109,4 +125,5 @@ module.exports = {
 
   show,
   refresh,
+  subscription,
 };
