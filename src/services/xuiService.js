@@ -183,15 +183,14 @@ async function updateClient(clientData) {
   return response.data;
 }
 
-async function toggleClient(uuid, enable) {
+async function toggleClient(email, enable) {
   await login();
 
   const response = await client.post(
-    "/panel/api/clients/status",
+    `/panel/api/clients/${enable ? "enable" : "disable"}`,
 
     {
-      clientIds: [uuid],
-      enable,
+      email,
     },
 
     {
@@ -204,6 +203,9 @@ async function toggleClient(uuid, enable) {
       validateStatus: () => true,
     },
   );
+
+  console.log(response.status);
+  console.log(response.data);
 
   return response.data;
 }

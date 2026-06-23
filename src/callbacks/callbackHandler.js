@@ -47,6 +47,14 @@ module.exports = async (ctx) => {
     return serviceController.configs(ctx, data.split(":")[1]);
   }
 
+  if (data.startsWith("service_toggle:")) {
+    console.log(data);
+
+    ctx.match = data.match(/^service_toggle:(\d+)$/);
+
+    return serviceController.toggle(ctx);
+  }
+
   switch (action) {
     // ==========================
     // USER

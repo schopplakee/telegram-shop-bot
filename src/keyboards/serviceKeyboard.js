@@ -11,7 +11,7 @@ module.exports = function (serviceId) {
       Markup.button.callback("🔄 بروزرسانی", `service_refresh:${serviceId}`),
     ],
     [
-      Markup.button.callback("⏸ توقف سرویس", `service_toggle:${serviceId}`),
+      Markup.button.callback("⛔ توقف سرویس", `service_toggle:${service.id}`),
       Markup.button.callback("♻️ تمدید", `service_renew:${serviceId}`),
     ],
     [

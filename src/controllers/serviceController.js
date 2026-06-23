@@ -193,6 +193,26 @@ module.exports = {
     return ctx.reply("📦 سرویس‌های شما:", keyboard(services));
   },
 
+  async toggle(ctx) {
+    const id = Number(ctx.match[1]);
+
+    const service = await clientService.getById(id);
+
+    if (!service) return ctx.answerCbQuery("سرویس پیدا نشد");
+
+    const stats = await xuiService.getClientStats(service.email);
+
+    const enable = !stats.client.enable;
+
+    await xuiService.toggleClient(service.email, enable);
+
+    await ctx.answerCbQuery(
+      enable ? "✅ سرویس فعال شد" : "⛔ سرویس غیرفعال شد",
+    );
+
+    return this.refresh(ctx);
+  },
+
   show,
   refresh,
   subscription,
