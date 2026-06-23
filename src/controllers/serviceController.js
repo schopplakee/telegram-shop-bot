@@ -40,7 +40,7 @@ ${service.plan.days} روز
 `;
 
   return ctx.editMessageText(text, {
-    reply_markup: serviceKeyboard(service.id).reply_markup,
+    reply_markup: serviceKeyboard(service).reply_markup,
   });
 }
 
@@ -92,7 +92,7 @@ ${stat.enable ? "🟢 فعال" : "🔴 غیرفعال"}
 `;
 
   return ctx.editMessageText(text, {
-    reply_markup: serviceKeyboard(service.id).reply_markup,
+    reply_markup: serviceKeyboard(service).reply_markup,
   });
 }
 
@@ -196,21 +196,23 @@ module.exports = {
   async toggle(ctx) {
     const id = Number(ctx.match[1]);
 
-    const service = await clientService.getById(id);
+    const service = await clientService.get(id);
 
-    if (!service) return ctx.answerCbQuery("سرویس پیدا نشد");
+    if (!service) {
+      return ctx.answerCbQuery("سرویس پیدا نشد");
+    }
 
     const stats = await xuiService.getClientStats(service.email);
 
     const enable = !stats.client.enable;
 
-    await xuiService.toggleClient(service.email, enable);
+    await xuiService.toggleClient(service.client.id, enable);
 
     await ctx.answerCbQuery(
       enable ? "✅ سرویس فعال شد" : "⛔ سرویس غیرفعال شد",
     );
 
-    return this.refresh(ctx);
+    return this.refresh(ctx, id);
   },
 
   show,

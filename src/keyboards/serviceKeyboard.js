@@ -1,24 +1,20 @@
-const { Markup } = require("telegraf");
+const { InlineKeyboard } = require("grammy");
 
-module.exports = function (serviceId) {
-  return Markup.inlineKeyboard([
-    [
-      Markup.button.callback("📷 QR Code", `service_qr:${serviceId}`),
-      Markup.button.callback("🔗 لینک اشتراک", `service_link:${serviceId}`),
-    ],
-    [
-      Markup.button.callback("📥 کانفیگ‌ها", `service_configs:${serviceId}`),
-      Markup.button.callback("🔄 بروزرسانی", `service_refresh:${serviceId}`),
-    ],
-    [
-      Markup.button.callback("⛔ توقف سرویس", `service_toggle:${service.id}`),
-      Markup.button.callback("♻️ تمدید", `service_renew:${serviceId}`),
-    ],
-    [
-      Markup.button.callback("🔄 لینک جدید", `service_newlink:${serviceId}`),
-      Markup.button.callback("📖 راهنما", `service_help:${serviceId}`),
-    ],
-    [Markup.button.callback("🗑 حذف سرویس", `service_delete:${serviceId}`)],
-    [Markup.button.callback("🏠 منوی اصلی", "menu")],
-  ]);
+module.exports = function (id) {
+  return new InlineKeyboard()
+    .text("🔄 بروزرسانی", `service_refresh:${id}`)
+    .row()
+    .text("📱 QR Code", `service_qr:${id}`)
+    .text("🔗 لینک اشتراک", `service_link:${id}`)
+    .row()
+    .text("📄 کانفیگ", `service_config:${id}`)
+    .row()
+    .text("⏸ توقف", `service_disable:${id}`)
+    .text("▶️ فعال", `service_enable:${id}`)
+    .row()
+    .text("♻️ تمدید", `service_renew:${id}`)
+    .row()
+    .text("🗑 حذف سرویس", `service_delete:${id}`)
+    .row()
+    .text("🏠 منوی اصلی", "menu");
 };
