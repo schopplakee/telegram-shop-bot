@@ -40,7 +40,7 @@ ${service.plan.days} روز
 `;
 
   return ctx.editMessageText(text, {
-    reply_markup: serviceKeyboard(service).reply_markup,
+    reply_markup: serviceKeyboard(service.id).reply_markup,
   });
 }
 
@@ -92,7 +92,7 @@ ${stat.enable ? "🟢 فعال" : "🔴 غیرفعال"}
 `;
 
   return ctx.editMessageText(text, {
-    reply_markup: serviceKeyboard(service).reply_markup,
+    reply_markup: serviceKeyboard(service.id).reply_markup,
   });
 }
 
