@@ -1,3 +1,5 @@
+const QRCode = require("qrcode");
+
 const userService = require("../services/userService");
 const clientService = require("../services/clientService");
 
@@ -110,6 +112,31 @@ ${service.subscriptionUrl}`,
   );
 }
 
+async function qr(ctx, id) {
+  const service = await clientService.get(id);
+
+  if (!service) {
+    return ctx.answerCbQuery("سرویس پیدا نشد");
+  }
+
+  await ctx.answerCbQuery();
+
+  const buffer = await QRCode.toBuffer(service.subscriptionUrl, {
+    type: "png",
+    width: 600,
+    margin: 2,
+  });
+
+  return ctx.replyWithPhoto(
+    {
+      source: buffer,
+    },
+    {
+      caption: "📷 QR Code سرویس",
+    },
+  );
+}
+
 module.exports = {
   async list(ctx) {
     const user = await userService.getByTelegramId(ctx.from.id);
@@ -126,4 +153,5 @@ module.exports = {
   show,
   refresh,
   subscription,
+  qr,
 };

@@ -39,6 +39,10 @@ module.exports = async (ctx) => {
     return serviceController.subscription(ctx, data.split(":")[1]);
   }
 
+  if (data.startsWith("service_qr:")) {
+    return serviceController.qr(ctx, data.split(":")[1]);
+  }
+
   switch (action) {
     // ==========================
     // USER
