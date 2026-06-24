@@ -171,7 +171,7 @@ async function toggle(ctx, id) {
 
   const enable = !client.enable;
 
-  await xuiService.updateClient(service.email, enable);
+  await xuiService.toggleClient(service.email, enable);
 
   await ctx.answerCbQuery(enable ? "✅ سرویس فعال شد" : "⛔ سرویس متوقف شد");
 

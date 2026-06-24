@@ -215,6 +215,12 @@ async function getClient(email) {
 
     const stat = inbound.clientStats.find((c) => c.email === email);
 
+    console.log("CLIENT:");
+    console.log(JSON.stringify(client, null, 2));
+
+    console.log("STAT:");
+    console.log(JSON.stringify(stat, null, 2));
+
     return {
       inbound,
       client,
