@@ -7,7 +7,7 @@ module.exports = function (id, enabled = true) {
       Markup.button.callback("🔗 لینک", `service_link:${id}`),
     ],
 
-    [Markup.button.callback("📄 کانفیگ", `service_config:${id}`)],
+    [Markup.button.callback("📄 کانفیگ", `service_configs:${id}`)],
 
     [
       Markup.button.callback(

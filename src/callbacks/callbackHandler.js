@@ -48,9 +48,7 @@ module.exports = async (ctx) => {
   }
 
   if (data.startsWith("service_toggle:")) {
-    bot.action(/^service_toggle:(\d+)$/, async (ctx) => {
-      return serviceController.toggle(ctx, Number(ctx.match[1]));
-    });
+    return serviceController.toggle(ctx, Number(data.split(":")[1]));
   }
 
   switch (action) {
