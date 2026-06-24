@@ -160,18 +160,11 @@ async function deleteClient(email) {
   return response.data;
 }
 
-async function updateClient(email, enable) {
-  const result = await getClient(email);
-
-  if (!result) throw new Error("CLIENT_NOT_FOUND");
-
-  const clientData = {
-    ...result.client,
-    enable,
-  };
+async function updateClient(clientData) {
+  await login();
 
   const response = await client.post(
-    `/panel/api/clients/update/${email}`,
+    `/panel/api/clients/update/${clientData.email}`,
     clientData,
     {
       headers: {
@@ -179,49 +172,47 @@ async function updateClient(email, enable) {
         "X-CSRF-Token": csrf,
         "X-Requested-With": "XMLHttpRequest",
       },
+      validateStatus: () => true,
     },
   );
+
+  console.log(response.status);
+  console.log(response.data);
 
   return response.data;
 }
 
 async function toggleClient(email, enable) {
-  const result = await getClient(email);
+  await login();
 
-  if (!result) {
-    throw new Error("CLIENT_NOT_FOUND");
+  const inbounds = await getInbounds();
+
+  for (const inbound of inbounds.obj) {
+    const client = inbound.settings.clients.find((c) => c.email === email);
+
+    if (!client) continue;
+
+    client.enable = enable;
+
+    return updateClient({
+      id: client.id,
+      flow: client.flow || "",
+      email: client.email,
+      limitIp: client.limitIp,
+      totalGB: client.totalGB,
+      expiryTime: client.expiryTime,
+      enable: client.enable,
+      tgId: client.tgId || 0,
+      subId: client.subId,
+      reset: client.reset || 0,
+      comment: client.comment || "",
+      settings: JSON.stringify({
+        clients: inbound.settings.clients,
+      }),
+    });
   }
 
-  const inbound = result.inbound;
-  const client = result.client;
-
-  const clients = inbound.settings.clients.map((c) => {
-    if (c.email === email) {
-      return {
-        ...c,
-        enable,
-      };
-    }
-
-    return c;
-  });
-
-  return updateClient({
-    id: client.id,
-    flow: client.flow || "",
-    email: client.email,
-    limitIp: client.limitIp,
-    totalGB: client.total,
-    expiryTime: client.expiryTime,
-    enable,
-    tgId: client.tgId || 0,
-    subId: client.subId,
-    reset: client.reset || 0,
-    comment: client.comment || "",
-    settings: JSON.stringify({
-      clients,
-    }),
-  });
+  throw new Error("CLIENT_NOT_FOUND");
 }
 
 async function getClient(email) {
