@@ -183,50 +183,38 @@ async function updateClient(clientData) {
 }
 
 async function toggleClient(email, enable) {
-  await login();
+  const result = await getClient(email);
 
-  const inbounds = await getInbounds();
+  if (!result) throw new Error("CLIENT_NOT_FOUND");
 
-  for (const inbound of inbounds.obj) {
-    const client = inbound.settings.clients.find((c) => c.email === email);
+  const client = result.client;
 
-    if (!client) continue;
+  client.enable = enable;
 
-    client.enable = enable;
-
-    return updateClient({
-      id: client.id,
-      flow: client.flow || "",
-      email: client.email,
-      limitIp: client.limitIp,
-      totalGB: client.totalGB,
-      expiryTime: client.expiryTime,
-      enable: client.enable,
-      tgId: client.tgId || 0,
-      subId: client.subId,
-      reset: client.reset || 0,
-      comment: client.comment || "",
-      settings: JSON.stringify({
-        clients: inbound.settings.clients,
-      }),
-    });
-  }
-
-  throw new Error("CLIENT_NOT_FOUND");
+  return updateClient(client);
 }
 
 async function getClient(email) {
   const inbounds = await getInbounds();
 
   for (const inbound of inbounds.obj) {
+    // اگر settings رشته است
+    const settings =
+      typeof inbound.settings === "string"
+        ? JSON.parse(inbound.settings)
+        : inbound.settings;
+
+    const client = settings.clients.find((c) => c.email === email);
+
+    if (!client) continue;
+
     const stat = inbound.clientStats.find((c) => c.email === email);
 
-    if (stat) {
-      return {
-        inbound,
-        client: stat,
-      };
-    }
+    return {
+      inbound,
+      client,
+      stat,
+    };
   }
 
   return null;
