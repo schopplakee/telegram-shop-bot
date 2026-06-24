@@ -51,6 +51,18 @@ module.exports = async (ctx) => {
     return serviceController.toggle(ctx, Number(data.split(":")[1]));
   }
 
+  if (data.startsWith("confirm_delete:")) {
+    return serviceController.confirmDelete(ctx, Number(data.split(":")[1]));
+  }
+
+  if (data.startsWith("renew_plan:")) {
+    return serviceController.renewPlan(ctx, Number(data.split(":")[1]));
+  }
+
+  if (data.startsWith("service_newsub:")) {
+    return serviceController.newSubscription(ctx, Number(data.split(":")[1]));
+  }
+
   switch (action) {
     // ==========================
     // USER

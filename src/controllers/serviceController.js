@@ -178,6 +178,92 @@ async function toggle(ctx, id) {
   return refresh(ctx, id);
 }
 
+async function renew(ctx, id) {
+  const service = await clientService.get(id);
+
+  if (!service) {
+    return ctx.answerCbQuery("سرویس پیدا نشد");
+  }
+
+  await ctx.answerCbQuery();
+
+  return ctx.reply(
+    `💳 تمدید سرویس
+
+پلن فعلی:
+${service.plan.name}
+
+برای تمدید یکی از پلن‌های زیر را انتخاب کنید.`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "📅 تمدید همین پلن",
+              callback_data: `renew_plan:${service.id}`,
+            },
+          ],
+        ],
+      },
+    },
+  );
+}
+
+async function remove(ctx, id) {
+  const service = await clientService.get(id);
+
+  if (!service) {
+    return ctx.answerCbQuery("سرویس پیدا نشد");
+  }
+
+  await ctx.answerCbQuery();
+
+  return ctx.reply("⚠️ آیا از حذف این سرویس مطمئن هستید؟", {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "✅ بله",
+            callback_data: `confirm_delete:${service.id}`,
+          },
+          {
+            text: "❌ خیر",
+            callback_data: `service:${service.id}`,
+          },
+        ],
+      ],
+    },
+  });
+}
+
+async function newSubscription(ctx, id) {
+  const service = await clientService.get(id);
+
+  if (!service) {
+    return ctx.answerCbQuery("سرویس پیدا نشد");
+  }
+
+  await ctx.answerCbQuery("در حال ساخت لینک جدید...");
+
+  const result = await xuiService.regenerateSubscription(service.email);
+
+  if (!result.success) {
+    return ctx.reply("❌ ساخت لینک جدید انجام نشد.");
+  }
+
+  service.subscriptionUrl = result.url;
+
+  await clientService.update(service.id, {
+    subscriptionUrl: result.url,
+  });
+
+  return ctx.reply(
+    `✅ لینک جدید ساخته شد
+
+${result.url}`,
+  );
+}
+
 module.exports = {
   async list(ctx) {
     const user = await userService.getByTelegramId(ctx.from.id);
@@ -197,4 +283,7 @@ module.exports = {
   qr,
   configs,
   toggle,
+  renew,
+  remove,
+  newSubscription,
 };
