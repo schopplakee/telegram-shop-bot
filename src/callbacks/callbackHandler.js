@@ -59,10 +59,6 @@ module.exports = async (ctx) => {
     return serviceController.renewPlan(ctx, Number(data.split(":")[1]));
   }
 
-  if (data.startsWith("service_newsub:")) {
-    return serviceController.newSubscription(ctx, Number(data.split(":")[1]));
-  }
-
   switch (action) {
     // ==========================
     // USER

@@ -218,50 +218,38 @@ async function remove(ctx, id) {
 
   await ctx.answerCbQuery();
 
-  return ctx.reply("⚠️ آیا از حذف این سرویس مطمئن هستید؟", {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: "✅ بله",
-            callback_data: `confirm_delete:${service.id}`,
-          },
-          {
-            text: "❌ خیر",
-            callback_data: `service:${service.id}`,
-          },
-        ],
+  return ctx.editMessageReplyMarkup({
+    inline_keyboard: [
+      [
+        {
+          text: "✅ حذف شود",
+          callback_data: `confirm_delete:${service.id}`,
+        },
       ],
-    },
+      [
+        {
+          text: "❌ انصراف",
+          callback_data: `service:${service.id}`,
+        },
+      ],
+    ],
   });
 }
 
-async function newSubscription(ctx, id) {
+async function confirmDelete(ctx, id) {
   const service = await clientService.get(id);
 
   if (!service) {
     return ctx.answerCbQuery("سرویس پیدا نشد");
   }
 
-  await ctx.answerCbQuery("در حال ساخت لینک جدید...");
+  await xuiService.deleteClient(service.email);
 
-  const result = await xuiService.regenerateSubscription(service.email);
+  await clientService.delete(service.id);
 
-  if (!result.success) {
-    return ctx.reply("❌ ساخت لینک جدید انجام نشد.");
-  }
+  await ctx.answerCbQuery("✅ سرویس حذف شد");
 
-  service.subscriptionUrl = result.url;
-
-  await clientService.update(service.id, {
-    subscriptionUrl: result.url,
-  });
-
-  return ctx.reply(
-    `✅ لینک جدید ساخته شد
-
-${result.url}`,
-  );
+  return ctx.editMessageText("✅ سرویس با موفقیت حذف شد.");
 }
 
 module.exports = {
@@ -285,5 +273,5 @@ module.exports = {
   toggle,
   renew,
   remove,
-  newSubscription,
+  confirmDelete,
 };
