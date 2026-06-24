@@ -7,6 +7,8 @@ const keyboard = require("../keyboards/myServicesKeyboard");
 const serviceKeyboard = require("../keyboards/serviceKeyboard");
 const xuiService = require("../services/xuiService");
 
+const stats = await xuiService.getClientStats(service.email);
+
 async function show(ctx, id) {
   const service = await clientService.get(id);
 
@@ -40,7 +42,7 @@ ${service.plan.days} روز
 `;
 
   return ctx.editMessageText(text, {
-    reply_markup: serviceKeyboard(service.id).reply_markup,
+    reply_markup: serviceKeyboard(service.id, stats.client.enable).reply_markup,
   });
 }
 
@@ -92,7 +94,7 @@ ${stat.enable ? "🟢 فعال" : "🔴 غیرفعال"}
 `;
 
   return ctx.editMessageText(text, {
-    reply_markup: serviceKeyboard(service.id).reply_markup,
+    reply_markup: serviceKeyboard(service.id, stat.enable).reply_markup,
   });
 }
 
@@ -144,40 +146,31 @@ async function configs(ctx, id) {
     return ctx.answerCbQuery("سرویس پیدا نشد");
   }
 
+  const config = await xuiService.getClientConfig(service.email);
+
   await ctx.answerCbQuery();
 
-  const text = `📥 کانفیگ‌های سرویس
+  return ctx.reply(`<code>${config}</code>`, {
+    parse_mode: "HTML",
+  });
+}
 
-🔗 Subscription
+async function toggle(ctx, id) {
+  const service = await clientService.get(id);
 
-${service.subscriptionUrl}
+  if (!service) {
+    return ctx.answerCbQuery("سرویس پیدا نشد");
+  }
 
-━━━━━━━━━━━━━━
+  const { client } = await xuiService.getClientStats(service.email);
 
-📱 برنامه‌های پیشنهادی
+  const enable = !client.enable;
 
-🤖 Android
-• Hiddify Next
-• Nekobox
-• v2rayNG
+  await xuiService.toggleClient(service.email, enable);
 
-🍏 iPhone
-• Streisand
-• Hiddify Next
+  await ctx.answerCbQuery(enable ? "✅ سرویس فعال شد" : "⛔ سرویس متوقف شد");
 
-🖥 Windows
-• Hiddify Next
-• Nekoray
-
-🍎 macOS
-• Hiddify Next
-
-🐧 Linux
-• Hiddify Next
-
-کافی است لینک بالا را داخل برنامه Import کنید.`;
-
-  return ctx.reply(text);
+  return refresh(ctx, id);
 }
 
 module.exports = {
@@ -193,31 +186,10 @@ module.exports = {
     return ctx.reply("📦 سرویس‌های شما:", keyboard(services));
   },
 
-  async toggle(ctx) {
-    const id = Number(ctx.match[1]);
-
-    const service = await clientService.get(id);
-
-    if (!service) {
-      return ctx.answerCbQuery("سرویس پیدا نشد");
-    }
-
-    const stats = await xuiService.getClientStats(service.email);
-
-    const enable = !stats.client.enable;
-
-    await xuiService.toggleClient(service.client.id, enable);
-
-    await ctx.answerCbQuery(
-      enable ? "✅ سرویس فعال شد" : "⛔ سرویس غیرفعال شد",
-    );
-
-    return this.refresh(ctx, id);
-  },
-
   show,
   refresh,
   subscription,
   qr,
   configs,
+  toggle,
 };

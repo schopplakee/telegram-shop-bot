@@ -1,4 +1,5 @@
 const axios = require("axios");
+const console = require("console");
 const crypto = require("crypto");
 
 console.log("XUI_URL =", process.env.XUI_URL);
@@ -215,7 +216,7 @@ async function getClient(email) {
 
   for (const inbound of inbounds.obj) {
     const stat = inbound.clientStats.find((c) => c.email === email);
-
+    
     if (stat) {
       return {
         inbound,
