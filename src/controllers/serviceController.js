@@ -7,14 +7,14 @@ const keyboard = require("../keyboards/myServicesKeyboard");
 const serviceKeyboard = require("../keyboards/serviceKeyboard");
 const xuiService = require("../services/xuiService");
 
-const stats = await xuiService.getClientStats(service.email);
-
 async function show(ctx, id) {
   const service = await clientService.get(id);
 
   if (!service) {
     return ctx.answerCbQuery("سرویس پیدا نشد");
   }
+
+  const { client } = await xuiService.getClientStats(service.email);
 
   const text = `
 🌍 ${service.server.country.flag} ${service.server.country.name}
@@ -37,12 +37,11 @@ ${Number(service.trafficLimit) / 1024 / 1024 / 1024} GB
 ⏳ اعتبار
 ${service.plan.days} روز
 
-🟢 وضعیت
-فعال
+${client.enable ? "🟢 فعال" : "🔴 غیرفعال"}
 `;
 
   return ctx.editMessageText(text, {
-    reply_markup: serviceKeyboard(service.id, stats.client.enable).reply_markup,
+    reply_markup: serviceKeyboard(service.id, client.enable).reply_markup,
   });
 }
 
