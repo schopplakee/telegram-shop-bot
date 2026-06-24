@@ -163,6 +163,10 @@ async function deleteClient(email) {
 async function updateClient(clientData) {
   await login();
 
+  console.log("===============");
+  console.log(JSON.stringify(clientData, null, 2));
+  console.log("===============");
+
   const response = await client.post(
     `/panel/api/clients/update/${clientData.email}`,
     clientData,
