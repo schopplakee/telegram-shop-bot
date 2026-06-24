@@ -191,9 +191,10 @@ async function toggleClient(email, enable) {
 
   if (!result) throw new Error("CLIENT_NOT_FOUND");
 
-  const client = result.client;
-
-  client.enable = enable;
+  const client = {
+    ...result.client,
+    enable,
+  };
 
   return updateClient(client);
 }
