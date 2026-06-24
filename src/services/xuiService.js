@@ -185,30 +185,42 @@ async function updateClient(clientData) {
 }
 
 async function toggleClient(email, enable) {
-  await login();
+  const result = await getClient(email);
 
-  const response = await client.post(
-    `/panel/api/clients/${enable ? "enable" : "disable"}`,
+  if (!result) {
+    throw new Error("CLIENT_NOT_FOUND");
+  }
 
-    {
-      email,
-    },
+  const inbound = result.inbound;
+  const client = result.client;
 
-    {
-      headers: {
-        Cookie: cookie,
-        "X-CSRF-Token": csrf,
-        "X-Requested-With": "XMLHttpRequest",
-      },
+  const clients = inbound.settings.clients.map((c) => {
+    if (c.email === email) {
+      return {
+        ...c,
+        enable,
+      };
+    }
 
-      validateStatus: () => true,
-    },
-  );
+    return c;
+  });
 
-  console.log(response.status);
-  console.log(response.data);
-
-  return response.data;
+  return updateClient({
+    id: client.id,
+    flow: client.flow || "",
+    email: client.email,
+    limitIp: client.limitIp,
+    totalGB: client.total,
+    expiryTime: client.expiryTime,
+    enable,
+    tgId: client.tgId || 0,
+    subId: client.subId,
+    reset: client.reset || 0,
+    comment: client.comment || "",
+    settings: JSON.stringify({
+      clients,
+    }),
+  });
 }
 
 async function getClient(email) {
@@ -216,7 +228,7 @@ async function getClient(email) {
 
   for (const inbound of inbounds.obj) {
     const stat = inbound.clientStats.find((c) => c.email === email);
-    
+
     if (stat) {
       return {
         inbound,
@@ -288,6 +300,16 @@ async function getClientStats(email) {
   };
 }
 
+async function getClientConfig(email) {
+  const result = await getClient(email);
+
+  if (!result) {
+    throw new Error("CLIENT_NOT_FOUND");
+  }
+
+  return buildSubscriptionUrl(result.inbound, result.client);
+}
+
 module.exports = {
   login,
   getInbounds,
@@ -299,4 +321,5 @@ module.exports = {
   createClient,
   buildSubscriptionUrl,
   getClientStats,
+  getClientConfig,
 };
