@@ -160,26 +160,27 @@ async function deleteClient(email) {
   return response.data;
 }
 
-async function updateClient(clientData) {
-  await login();
+async function updateClient(email, enable) {
+  const result = await getClient(email);
+
+  if (!result) throw new Error("CLIENT_NOT_FOUND");
+
+  const clientData = {
+    ...result.client,
+    enable,
+  };
 
   const response = await client.post(
-    `/panel/api/clients/update/${clientData.email}`,
-
+    `/panel/api/clients/update/${email}`,
     clientData,
-
     {
       headers: {
         Cookie: cookie,
         "X-CSRF-Token": csrf,
         "X-Requested-With": "XMLHttpRequest",
       },
-      validateStatus: () => true,
     },
   );
-
-  console.log(response.status);
-  console.log(response.data);
 
   return response.data;
 }

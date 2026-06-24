@@ -52,11 +52,9 @@ async function refresh(ctx, id) {
     return ctx.answerCbQuery("سرویس پیدا نشد");
   }
 
-  const { stat } = await xuiService.getClientStats(service.email);
+  const { stat, client } = await xuiService.getClientStats(service.email);
 
   const used = Number(stat.up) + Number(stat.down);
-
-  const remain = Number(service.trafficLimit) - used;
 
   const remainDays = Math.max(
     0,
@@ -89,12 +87,20 @@ GB
 ⏳ اعتبار
 ${remainDays} روز
 
-${stat.enable ? "🟢 فعال" : "🔴 غیرفعال"}
+${client.enable ? "🟢 فعال" : "🔴 غیرفعال"}
 `;
 
-  return ctx.editMessageText(text, {
-    reply_markup: serviceKeyboard(service.id, stat.enable).reply_markup,
-  });
+  try {
+    return await ctx.editMessageText(text, {
+      reply_markup: serviceKeyboard(service.id, client.enable).reply_markup,
+    });
+  } catch (e) {
+    if (e.description && e.description.includes("message is not modified")) {
+      return ctx.answerCbQuery("بدون تغییر");
+    }
+
+    throw e;
+  }
 }
 
 async function subscription(ctx, id) {
@@ -165,7 +171,7 @@ async function toggle(ctx, id) {
 
   const enable = !client.enable;
 
-  await xuiService.toggleClient(service.email, enable);
+  await xuiService.updateClient(service.email, enable);
 
   await ctx.answerCbQuery(enable ? "✅ سرویس فعال شد" : "⛔ سرویس متوقف شد");
 
