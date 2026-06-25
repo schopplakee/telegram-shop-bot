@@ -63,6 +63,14 @@ module.exports = async (ctx) => {
     return serviceController.newSubscription(ctx, Number(data.split(":")[1]));
   }
 
+  if (data.startsWith("service_renew:")) {
+    return serviceController.renew(ctx, Number(data.split(":")[1]));
+  }
+
+  if (data.startsWith("renew_payment:")) {
+    return serviceController.renewPayment(ctx, Number(data.split(":")[1]));
+  }
+
   switch (action) {
     // ==========================
     // USER

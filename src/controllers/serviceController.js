@@ -188,19 +188,32 @@ async function renew(ctx, id) {
   await ctx.answerCbQuery();
 
   return ctx.reply(
-    `💳 تمدید سرویس
+    `♻️ تمدید سرویس
 
-پلن فعلی:
+پلن:
 ${service.plan.name}
 
-برای تمدید یکی از پلن‌های زیر را انتخاب کنید.`,
+اعتبار:
+${service.plan.days} روز
+
+حجم:
+${service.plan.traffic} GB
+
+قیمت:
+${service.plan.price.toLocaleString("fa-IR")} تومان`,
     {
       reply_markup: {
         inline_keyboard: [
           [
             {
-              text: "📅 تمدید همین پلن",
-              callback_data: `renew_plan:${service.id}`,
+              text: "💳 پرداخت",
+              callback_data: `renew_payment:${service.id}`,
+            },
+          ],
+          [
+            {
+              text: "❌ انصراف",
+              callback_data: `service:${service.id}`,
             },
           ],
         ],
@@ -270,6 +283,26 @@ ${config}`,
   );
 }
 
+async function renewPayment(ctx, id) {
+  const service = await clientService.get(id);
+
+  if (!service) {
+    return ctx.answerCbQuery("سرویس پیدا نشد");
+  }
+
+  await ctx.answerCbQuery();
+
+  return ctx.reply(
+    `✅ این قسمت در مرحله بعد به زرین پال متصل می‌شود.
+
+شناسه سرویس:
+${service.id}
+
+مبلغ:
+${service.plan.price.toLocaleString("fa-IR")} تومان`,
+  );
+}
+
 module.exports = {
   async list(ctx) {
     const user = await userService.getByTelegramId(ctx.from.id);
@@ -293,4 +326,5 @@ module.exports = {
   remove,
   confirmDelete,
   newSubscription,
+  renewPayment,
 };
