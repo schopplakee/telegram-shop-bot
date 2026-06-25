@@ -1,3 +1,4 @@
+const prisma = require("../config/database");
 const paymentKeyboard = require("../keyboards/paymentKeyboard");
 
 const userService = require("../services/userService");
@@ -6,9 +7,86 @@ const walletService = require("../services/walletService");
 const xuiService = require("../services/xuiService");
 const orderService = require("../services/orderService");
 const purchaseService = require("../services/purchaseService");
+const clientService = require("../services/clientService");
 
 const sessionManager = require("../sessions/sessionManager");
 
+async function walletRenew(ctx, serviceId) {
+  const telegramId = String(ctx.from.id);
+
+  const user = await prisma.user.findUnique({
+    where: {
+      telegramId,
+    },
+  });
+
+  if (!user) {
+    return ctx.answerCbQuery("کاربر پیدا نشد");
+  }
+
+  const service = await clientService.get(serviceId);
+
+  if (!service) {
+    return ctx.answerCbQuery("سرویس پیدا نشد");
+  }
+
+  const amount = service.plan.price;
+
+  if (user.balance < amount) {
+    return ctx.reply("❌ موجودی کیف پول کافی نیست.");
+  }
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      balance: {
+        decrement: amount,
+      },
+    },
+  });
+
+  await prisma.walletTransaction.create({
+    data: {
+      userId: user.id,
+      amount,
+      type: "DEBIT",
+      description: `تمدید سرویس #${service.id}`,
+    },
+  });
+
+  const expire =
+    new Date(service.expireAt) > new Date()
+      ? new Date(service.expireAt)
+      : new Date();
+
+  expire.setDate(expire.getDate() + service.plan.days);
+
+  await prisma.service.update({
+    where: {
+      id: service.id,
+    },
+    data: {
+      expireAt: expire,
+    },
+  });
+
+  await xuiService.extendClient(service.email, expire.getTime());
+
+  await ctx.answerCbQuery();
+
+  return ctx.reply(
+    `✅ سرویس با موفقیت تمدید شد.
+
+💰 مبلغ:
+${amount.toLocaleString("fa-IR")} تومان
+
+📅 اعتبار جدید:
+
+${expire.toLocaleDateString("fa-IR")}`,
+  );
+}
 module.exports = {
   async select(ctx) {
     return ctx.editMessageText(
@@ -68,4 +146,6 @@ ${result.subscriptionUrl}`,
       return ctx.editMessageText("❌ خطا در ساخت سرویس.");
     }
   },
+
+  walletRenew,
 };

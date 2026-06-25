@@ -314,7 +314,7 @@ ${service.plan.price.toLocaleString("fa-IR")} تومان`,
           [
             {
               text: "👛 کیف پول",
-              callback_data: `renew_wallet:${service.id}`,
+              callback_data: `wallet_pay:${service.id}`,
             },
           ],
         ],

@@ -163,13 +163,37 @@ async function deleteClient(email) {
 async function updateClient(clientData) {
   await login();
 
-  console.log("===============");
-  console.log(JSON.stringify(clientData, null, 2));
-  console.log("===============");
+  const payload = {
+    id: clientData.id,
+    email: clientData.email,
+    enable: Boolean(clientData.enable),
+
+    totalGB: Number(clientData.totalGB),
+
+    expiryTime: Number(clientData.expiryTime),
+
+    limitIp: Number(clientData.limitIp || 0),
+    tgId: Number(clientData.tgId || 0),
+
+    subId: clientData.subId,
+    password: clientData.password,
+    auth: clientData.auth,
+
+    flow: clientData.flow || "",
+    security: clientData.security || "auto",
+
+    comment: clientData.comment || "",
+    group: clientData.group || "",
+
+    reset: Number(clientData.reset || 0),
+  };
+
+  console.log("UPDATE PAYLOAD:");
+  console.log(JSON.stringify(payload, null, 2));
 
   const response = await client.post(
-    `/panel/api/clients/update/${clientData.email}`,
-    clientData,
+    `/panel/api/clients/update/${payload.email}`,
+    payload,
     {
       headers: {
         Cookie: cookie,
@@ -180,8 +204,8 @@ async function updateClient(clientData) {
     },
   );
 
-  console.log(response.status);
-  console.log(response.data);
+  console.log("STATUS:", response.status);
+  console.log("DATA:", response.data);
 
   return response.data;
 }
@@ -301,6 +325,34 @@ async function getClientConfig(email) {
   return buildSubscriptionUrl(result.inbound, result.client);
 }
 
+async function extendClient(email, expiryTime) {
+  const result = await getClient(email);
+
+  if (!result) {
+    throw new Error("CLIENT_NOT_FOUND");
+  }
+
+  const client = result.client;
+
+  return updateClient({
+    email: client.email,
+    id: client.id,
+    subId: client.subId,
+    password: client.password,
+    auth: client.auth,
+    flow: client.flow || "",
+    security: client.security || "auto",
+    totalGB: client.totalGB,
+    expiryTime,
+    reset: client.reset || 0,
+    limitIp: client.limitIp || 0,
+    tgId: client.tgId || 0,
+    group: client.group || "",
+    comment: client.comment || "",
+    enable: true,
+  });
+}
+
 module.exports = {
   login,
   getInbounds,
@@ -313,4 +365,5 @@ module.exports = {
   buildSubscriptionUrl,
   getClientStats,
   getClientConfig,
+  extendClient,
 };
