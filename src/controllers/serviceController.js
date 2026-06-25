@@ -245,7 +245,7 @@ async function confirmDelete(ctx, id) {
     return ctx.answerCbQuery("حذف داخل پنل انجام نشد");
   }
 
-  await clientService.delete(service.id);
+  await clientService.remove(service.id);
 
   await ctx.answerCbQuery("✅ حذف شد");
 

@@ -64,8 +64,17 @@ async function get(id) {
   });
 }
 
+async function remove(id) {
+  return prisma.service.delete({
+    where: {
+      id,
+    },
+  });
+}
+
 module.exports = {
   create,
   getByUser,
   get,
+  remove,
 };
