@@ -6,6 +6,7 @@ const clientService = require("../services/clientService");
 const keyboard = require("../keyboards/myServicesKeyboard");
 const serviceKeyboard = require("../keyboards/serviceKeyboard");
 const xuiService = require("../services/xuiService");
+const renewPaymentKeyboard = require("../keyboards/renewPaymentKeyboard");
 
 async function show(ctx, id) {
   const service = await clientService.get(id);
@@ -188,37 +189,14 @@ async function renew(ctx, id) {
   await ctx.answerCbQuery();
 
   return ctx.reply(
-    `♻️ تمدید سرویس
+    `💳 تمدید سرویس
 
 پلن:
 ${service.plan.name}
 
-اعتبار:
-${service.plan.days} روز
-
-حجم:
-${service.plan.traffic} GB
-
-قیمت:
+مبلغ:
 ${service.plan.price.toLocaleString("fa-IR")} تومان`,
-    {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: "💳 پرداخت",
-              callback_data: `renew_payment:${service.id}`,
-            },
-          ],
-          [
-            {
-              text: "❌ انصراف",
-              callback_data: `service:${service.id}`,
-            },
-          ],
-        ],
-      },
-    },
+    renewPaymentKeyboard(service.id),
   );
 }
 

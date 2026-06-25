@@ -94,6 +94,27 @@ ${expire.toLocaleDateString("fa-IR")}`,
   );
 }
 
+async function cardRenew(ctx, serviceId) {
+  await sessionManager.set(ctx.from.id, {
+    step: "renew_card_receipt",
+    data: {
+      serviceId,
+    },
+  });
+
+  await ctx.answerCbQuery();
+
+  return ctx.reply(
+    `🏦 پرداخت کارت به کارت
+
+شماره کارت:
+
+6037-9975-xxxx-xxxx
+
+پس از پرداخت، تصویر رسید را ارسال کنید.`,
+  );
+}
+
 module.exports = {
   async select(ctx) {
     return ctx.editMessageText(
@@ -155,4 +176,5 @@ ${result.subscriptionUrl}`,
   },
 
   walletRenew,
+  cardRenew,
 };
