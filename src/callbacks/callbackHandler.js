@@ -79,6 +79,10 @@ module.exports = async (ctx) => {
     return serviceController.renewWallet(ctx, Number(data.split(":")[1]));
   }
 
+  if (data.startsWith("wallet_renew:")) {
+    return paymentController.walletRenew(ctx, Number(data.split(":")[1]));
+  }
+
   switch (action) {
     // ==========================
     // USER

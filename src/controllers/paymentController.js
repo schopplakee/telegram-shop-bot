@@ -74,7 +74,11 @@ async function walletRenew(ctx, serviceId) {
     },
   });
 
-  await xuiService.extendClient(service.email, expire.getTime());
+  const result = await xuiService.extendClient(service.email, expire.getTime());
+
+  if (!result.success) {
+    throw new Error("UPDATE_FAILED");
+  }
 
   await ctx.answerCbQuery();
 
@@ -89,6 +93,7 @@ ${amount.toLocaleString("fa-IR")} تومان
 ${expire.toLocaleDateString("fa-IR")}`,
   );
 }
+
 module.exports = {
   async select(ctx) {
     return ctx.editMessageText(

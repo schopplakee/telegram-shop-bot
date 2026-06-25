@@ -326,31 +326,17 @@ async function getClientConfig(email) {
 }
 
 async function extendClient(email, expiryTime) {
-  const result = await getClient(email);
+  const info = await getClient(email);
 
-  if (!result) {
+  if (!info) {
     throw new Error("CLIENT_NOT_FOUND");
   }
 
-  const client = result.client;
+  const { client } = info;
 
-  return updateClient({
-    email: client.email,
-    id: client.id,
-    subId: client.subId,
-    password: client.password,
-    auth: client.auth,
-    flow: client.flow || "",
-    security: client.security || "auto",
-    totalGB: client.totalGB,
-    expiryTime,
-    reset: client.reset || 0,
-    limitIp: client.limitIp || 0,
-    tgId: client.tgId || 0,
-    group: client.group || "",
-    comment: client.comment || "",
-    enable: true,
-  });
+  client.expiryTime = expiryTime;
+
+  return updateClient(client);
 }
 
 module.exports = {
