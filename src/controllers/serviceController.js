@@ -284,7 +284,12 @@ ${config}`,
 }
 
 async function renewPayment(ctx, id) {
-  const service = await clientService.get(id);
+  const service = await clientService.get(id, {
+    include: {
+      plan: true,
+      user: true,
+    },
+  });
 
   if (!service) {
     return ctx.answerCbQuery("سرویس پیدا نشد");
@@ -293,14 +298,71 @@ async function renewPayment(ctx, id) {
   await ctx.answerCbQuery();
 
   return ctx.reply(
-    `✅ این قسمت در مرحله بعد به زرین پال متصل می‌شود.
-
-شناسه سرویس:
-${service.id}
+    `💳 روش پرداخت را انتخاب کنید
 
 مبلغ:
 ${service.plan.price.toLocaleString("fa-IR")} تومان`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "💳 کارت به کارت",
+              callback_data: `renew_card:${service.id}`,
+            },
+          ],
+          [
+            {
+              text: "👛 کیف پول",
+              callback_data: `renew_wallet:${service.id}`,
+            },
+          ],
+        ],
+      },
+    },
   );
+}
+
+async function renewCard(ctx, id) {
+  const service = await clientService.get(id);
+
+  if (!service) return ctx.answerCbQuery("سرویس پیدا نشد");
+
+  await ctx.answerCbQuery();
+
+  return ctx.reply(
+    `💳 پرداخت کارت به کارت
+
+شماره کارت:
+
+6037-9975-0000-0000
+
+پس از واریز، تصویر رسید را ارسال کنید.
+
+شماره سرویس شما:
+
+${service.id}`,
+  );
+}
+
+async function renewWallet(ctx, id) {
+  const service = await clientService.get(id, {
+    include: {
+      user: true,
+      plan: true,
+    },
+  });
+
+  if (!service) return ctx.answerCbQuery("سرویس پیدا نشد");
+
+  if (service.user.balance < service.plan.price) {
+    return ctx.reply("❌ موجودی کیف پول کافی نیست.");
+  }
+
+  // مرحله بعد اینجا موجودی کم می‌شود
+  // و سرویس تمدید می‌شود
+
+  return ctx.reply("✅ در مرحله بعد کیف پول و تمدید سرویس انجام می‌شود.");
 }
 
 module.exports = {
@@ -327,4 +389,6 @@ module.exports = {
   confirmDelete,
   newSubscription,
   renewPayment,
+  renewCard,
+  renewWallet,
 };
