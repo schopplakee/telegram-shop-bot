@@ -210,12 +210,6 @@ ${service.plan.name}
 }
 
 async function remove(ctx, id) {
-  const service = await clientService.get(id);
-
-  if (!service) {
-    return ctx.answerCbQuery("سرویس پیدا نشد");
-  }
-
   await ctx.answerCbQuery();
 
   return ctx.editMessageReplyMarkup({
@@ -223,13 +217,13 @@ async function remove(ctx, id) {
       [
         {
           text: "✅ حذف شود",
-          callback_data: `confirm_delete:${service.id}`,
+          callback_data: `confirm_delete:${id}`,
         },
       ],
       [
         {
           text: "❌ انصراف",
-          callback_data: `service:${service.id}`,
+          callback_data: `service:${id}`,
         },
       ],
     ],
@@ -243,13 +237,37 @@ async function confirmDelete(ctx, id) {
     return ctx.answerCbQuery("سرویس پیدا نشد");
   }
 
-  await xuiService.deleteClient(service.email);
+  const result = await xuiService.deleteClient(service.email);
+
+  console.log(result);
+
+  if (!result.success) {
+    return ctx.answerCbQuery("حذف داخل پنل انجام نشد");
+  }
 
   await clientService.delete(service.id);
 
-  await ctx.answerCbQuery("✅ سرویس حذف شد");
+  await ctx.answerCbQuery("✅ حذف شد");
 
-  return ctx.editMessageText("✅ سرویس با موفقیت حذف شد.");
+  return ctx.editMessageText("✅ سرویس حذف شد.");
+}
+
+async function newSubscription(ctx, id) {
+  const service = await clientService.get(id);
+
+  if (!service) {
+    return ctx.answerCbQuery("سرویس پیدا نشد");
+  }
+
+  const config = await xuiService.getClientConfig(service.email);
+
+  await ctx.answerCbQuery("✅ لینک دریافت شد");
+
+  return ctx.reply(
+    `🔗 لینک اشتراک جدید
+
+${config}`,
+  );
 }
 
 module.exports = {
@@ -274,4 +292,5 @@ module.exports = {
   renew,
   remove,
   confirmDelete,
+  newSubscription,
 };
