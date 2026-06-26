@@ -95,21 +95,19 @@ ${expire.toLocaleDateString("fa-IR")}`,
 }
 
 async function cardRenew(ctx, serviceId) {
-  await sessionManager.start(ctx.from.id, "renew", "waiting_card_receipt", {
+  await sessionManager.start(ctx.from.id, "renew_card", "receipt", {
     serviceId,
   });
 
   await ctx.answerCbQuery();
 
-  return ctx.reply(
-    `🏦 پرداخت کارت به کارت
+  return ctx.reply(`🏦 پرداخت کارت به کارت
 
 شماره کارت:
 
 6037-9975-xxxx-xxxx
 
-پس از پرداخت، تصویر رسید را ارسال کنید.`,
-  );
+پس از پرداخت، تصویر رسید را ارسال کنید.`);
 }
 
 async function receiveRenewReceipt(ctx) {
@@ -203,23 +201,22 @@ async function rejectRenew(ctx, serviceId, telegramId) {
 }
 
 async function receiptUploaded(ctx, session, photoId) {
-  const serviceId = session.data.serviceId;
+  const service = await clientService.get(session.data.serviceId);
 
   await ctx.telegram.sendPhoto(process.env.ADMIN_ID, photoId, {
-    caption: `📥 درخواست تمدید
+    caption: `🧾 درخواست تمدید
 
 👤 ${ctx.from.first_name}
 🆔 ${ctx.from.id}
 
-سرویس:
-#${serviceId}`,
+📧 ${service.email}`,
 
     reply_markup: {
       inline_keyboard: [
         [
           {
             text: "✅ تایید",
-            callback_data: `admin_renew_ok:${serviceId}:${ctx.from.id}`,
+            callback_data: `admin_renew_ok:${service.id}:${ctx.from.id}`,
           },
           {
             text: "❌ رد",
@@ -233,7 +230,7 @@ async function receiptUploaded(ctx, session, photoId) {
   await sessionManager.clear(ctx.from.id);
 
   return ctx.reply(
-    "✅ رسید شما دریافت شد.\n\nپس از تایید مدیر سرویس به صورت خودکار تمدید خواهد شد.",
+    "✅ رسید شما دریافت شد و پس از تایید مدیر سرویس تمدید خواهد شد.",
   );
 }
 
