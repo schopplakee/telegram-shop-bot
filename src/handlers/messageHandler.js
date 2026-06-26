@@ -51,7 +51,7 @@ const routes = {
 };
 
 module.exports = async (ctx) => {
-  const text = ctx.message?.text;
+  const text = ctx.message?.text || "";
 
   if (text === "❌ لغو") {
     const session = await sessionManager.get(ctx.from.id);
@@ -103,7 +103,14 @@ module.exports = async (ctx) => {
     currentSession.module === "renew_card" &&
     currentSession.step === "receipt"
   ) {
-    if (!ctx.message.photo) {
+    const photo =
+      ctx.message.photo?.at(-1)?.file_id ||
+      (ctx.message.document &&
+      ctx.message.document.mime_type?.startsWith("image/")
+        ? ctx.message.document.file_id
+        : null);
+
+    if (!photo) {
       return ctx.reply("❌ لطفا تصویر رسید را ارسال کنید.");
     }
 

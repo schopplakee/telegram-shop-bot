@@ -12,6 +12,8 @@ require("./commands/admin")(bot);
 
 bot.on("text", messageHandler);
 bot.on("callback_query", callbackHandler);
+bot.on("document", messageHandler);
+bot.on("callback_query", callbackHandler);
 
 (async () => {
   try {
