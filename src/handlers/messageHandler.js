@@ -116,8 +116,6 @@ module.exports = async (ctx) => {
 
     const paymentController = require("../controllers/paymentController");
 
-    const photo = ctx.message.photo.at(-1).file_id;
-
     const serviceId = currentSession.data.serviceId;
 
     await ctx.telegram.sendPhoto(process.env.ADMIN_ID, photo, {
