@@ -95,12 +95,25 @@ ${expire.toLocaleDateString("fa-IR")}`,
 }
 
 async function cardRenew(ctx, serviceId) {
-  await sessionManager.set(ctx.from.id, {
-    step: "renew_card_receipt",
-    data: {
-      serviceId,
-    },
-  });
+  const old = await sessionManager.get(ctx.from.id);
+
+  if (old) {
+    await sessionManager.update(ctx.from.id, {
+      module: "renew_card",
+      step: "WAIT_CARD_RECEIPT",
+      data: {
+        serviceId,
+      },
+    });
+  } else {
+    await sessionManager.create(ctx.from.id, {
+      module: "renew_card",
+      step: "WAIT_CARD_RECEIPT",
+      data: {
+        serviceId,
+      },
+    });
+  }
 
   await ctx.answerCbQuery();
 
