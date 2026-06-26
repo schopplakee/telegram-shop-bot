@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const { ADMIN_ID } = require("../configs/admin");
+const { ADMIN_ID } = require("../config/admin");
 
 const paymentKeyboard = require("../keyboards/paymentKeyboard");
 
