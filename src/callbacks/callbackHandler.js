@@ -75,6 +75,18 @@ module.exports = async (ctx) => {
     return paymentController.cardRenew(ctx, Number(data.split(":")[1]));
   }
 
+  if (data.startsWith("renew_accept:")) {
+    const [, serviceId, telegramId] = data.split(":");
+
+    return paymentController.acceptRenew(ctx, Number(serviceId), telegramId);
+  }
+
+  if (data.startsWith("renew_reject:")) {
+    const [, serviceId, telegramId] = data.split(":");
+
+    return paymentController.rejectRenew(ctx, Number(serviceId), telegramId);
+  }
+
   switch (action) {
     // ==========================
     // USER

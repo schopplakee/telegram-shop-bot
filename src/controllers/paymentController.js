@@ -115,6 +115,96 @@ async function cardRenew(ctx, serviceId) {
   );
 }
 
+async function receiveRenewReceipt(ctx) {
+  const session = await sessionManager.get(ctx.from.id);
+
+  if (!session || session.step !== "renew_card_receipt") {
+    return;
+  }
+
+  if (!ctx.message.photo) {
+    return ctx.reply("❌ لطفاً تصویر رسید را ارسال کنید.");
+  }
+
+  const photo = ctx.message.photo[ctx.message.photo.length - 1].file_id;
+
+  const service = await clientService.get(session.data.serviceId);
+
+  await ctx.telegram.sendPhoto(process.env.ADMIN_ID, photo, {
+    caption: `🧾 درخواست تمدید سرویس
+
+👤 ${ctx.from.first_name}
+🆔 ${ctx.from.id}
+
+📧 ${service.email}
+
+💰 ${service.plan.price.toLocaleString("fa-IR")} تومان`,
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "✅ تایید",
+            callback_data: `renew_accept:${service.id}:${ctx.from.id}`,
+          },
+          {
+            text: "❌ رد",
+            callback_data: `renew_reject:${service.id}:${ctx.from.id}`,
+          },
+        ],
+      ],
+    },
+  });
+
+  await sessionManager.clear(ctx.from.id);
+
+  return ctx.reply("✅ رسید ثبت شد و منتظر تایید مدیر است.");
+}
+
+async function acceptRenew(ctx, serviceId, telegramId) {
+  const service = await clientService.get(serviceId);
+
+  const expire =
+    new Date(service.expireAt) > new Date()
+      ? new Date(service.expireAt)
+      : new Date();
+
+  expire.setDate(expire.getDate() + service.plan.days);
+
+  await prisma.service.update({
+    where: {
+      id: service.id,
+    },
+    data: {
+      expireAt: expire,
+    },
+  });
+
+  await xuiService.extendClient(service.email, expire.getTime());
+
+  await ctx.telegram.sendMessage(
+    telegramId,
+    `✅ پرداخت شما تایید شد.
+
+سرویس با موفقیت تمدید گردید.`,
+  );
+
+  await ctx.answerCbQuery("تایید شد");
+
+  return ctx.editMessageCaption({
+    caption: "✅ تایید شد",
+  });
+}
+
+async function rejectRenew(ctx, serviceId, telegramId) {
+  await ctx.telegram.sendMessage(telegramId, "❌ پرداخت شما توسط مدیر رد شد.");
+
+  await ctx.answerCbQuery("رد شد");
+
+  return ctx.editMessageCaption({
+    caption: "❌ رد شد",
+  });
+}
+
 module.exports = {
   async select(ctx) {
     return ctx.editMessageText(
@@ -177,4 +267,7 @@ ${result.subscriptionUrl}`,
 
   walletRenew,
   cardRenew,
+  receiveRenewReceipt,
+  acceptRenew,
+  rejectRenew,
 };

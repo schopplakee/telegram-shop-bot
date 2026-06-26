@@ -95,6 +95,10 @@ module.exports = async (ctx) => {
     return;
   }
 
+  if (ctx.message.photo) {
+    return paymentController.receiveRenewReceipt(ctx);
+  }
+
   switch (currentSession.module) {
     case "COUNTRY":
       return countrySession(ctx, currentSession);
