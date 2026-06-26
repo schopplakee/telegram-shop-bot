@@ -95,8 +95,51 @@ module.exports = async (ctx) => {
     return;
   }
 
-  if (ctx.message.photo) {
-    return paymentController.receiveRenewReceipt(ctx);
+  // ----------------------
+  // Receipt Upload
+  // ----------------------
+
+  if (
+    currentSession.module === "renew_card" &&
+    currentSession.step === "receipt"
+  ) {
+    if (!ctx.message.photo) {
+      return ctx.reply("❌ لطفا تصویر رسید را ارسال کنید.");
+    }
+
+    const paymentController = require("../controllers/paymentController");
+
+    const photo = ctx.message.photo.at(-1).file_id;
+
+    const serviceId = currentSession.data.serviceId;
+
+    await ctx.telegram.sendPhoto(process.env.ADMIN_ID, photo, {
+      caption: `📥 رسید تمدید سرویس
+
+👤 ${ctx.from.first_name}
+🆔 ${ctx.from.id}
+
+سرویس: #${serviceId}`,
+
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "✅ تایید",
+              callback_data: `admin_renew_ok:${serviceId}:${ctx.from.id}`,
+            },
+            {
+              text: "❌ رد",
+              callback_data: `admin_renew_reject:${ctx.from.id}`,
+            },
+          ],
+        ],
+      },
+    });
+
+    await sessionManager.clear(ctx.from.id);
+
+    return paymentController.receiptUploaded(ctx);
   }
 
   switch (currentSession.module) {

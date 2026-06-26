@@ -72,9 +72,17 @@ async function remove(id) {
   });
 }
 
+async function update(id, data) {
+  return prisma.service.update({
+    where: { id },
+    data,
+  });
+}
+
 module.exports = {
   create,
   getByUser,
   get,
   remove,
+  update,
 };

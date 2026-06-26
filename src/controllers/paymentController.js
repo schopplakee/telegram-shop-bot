@@ -202,6 +202,60 @@ async function rejectRenew(ctx, serviceId, telegramId) {
   });
 }
 
+async function receiptUploaded(ctx) {
+  await ctx.reply(
+    "✅ رسید شما دریافت شد.\n\nپس از تایید مدیر، سرویس به صورت خودکار تمدید خواهد شد.",
+  );
+}
+
+async function adminRenewApprove(ctx, serviceId, userId) {
+  const service = await clientService.get(serviceId);
+
+  const expire =
+    new Date(service.expireAt) > new Date()
+      ? new Date(service.expireAt)
+      : new Date();
+
+  expire.setDate(expire.getDate() + service.plan.days);
+
+  await clientService.update(service.id, {
+    expireAt: expire,
+  });
+
+  await xuiService.extendClient(service.email, expire.getTime());
+
+  await ctx.editMessageCaption(
+    ctx.update.callback_query.message.caption + "\n\n✅ تایید شد",
+  );
+
+  await ctx.telegram.sendMessage(
+    userId,
+    `✅ پرداخت شما تایید شد.
+
+سرویس با موفقیت تمدید شد.
+
+اعتبار جدید:
+
+${expire.toLocaleDateString("fa-IR")}`,
+  );
+
+  return ctx.answerCbQuery("تایید شد");
+}
+
+async function adminRenewReject(ctx, userId) {
+  await ctx.editMessageCaption(
+    ctx.update.callback_query.message.caption + "\n\n❌ رد شد",
+  );
+
+  await ctx.telegram.sendMessage(userId, "❌ رسید پرداخت توسط مدیر رد شد.");
+
+  return ctx.answerCbQuery("رد شد");
+}
+
+module.exports = {
+  ...receiptUploaded,
+};
+
 module.exports = {
   async select(ctx) {
     return ctx.editMessageText(
@@ -267,4 +321,7 @@ ${result.subscriptionUrl}`,
   receiveRenewReceipt,
   acceptRenew,
   rejectRenew,
+  receiptUploaded,
+  adminRenewApprove,
+  adminRenewReject,
 };
