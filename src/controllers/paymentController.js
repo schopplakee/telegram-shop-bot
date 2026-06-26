@@ -202,54 +202,39 @@ async function rejectRenew(ctx, serviceId, telegramId) {
   });
 }
 
-async function receiptUploaded(ctx) {
-  await ctx.reply(
-    "✅ رسید شما دریافت شد.\n\nپس از تایید مدیر، سرویس به صورت خودکار تمدید خواهد شد.",
-  );
-}
+async function receiptUploaded(ctx, session, photoId) {
+  const serviceId = session.data.serviceId;
 
-async function adminRenewApprove(ctx, serviceId, userId) {
-  const service = await clientService.get(serviceId);
+  await ctx.telegram.sendPhoto(process.env.ADMIN_ID, photoId, {
+    caption: `📥 درخواست تمدید
 
-  const expire =
-    new Date(service.expireAt) > new Date()
-      ? new Date(service.expireAt)
-      : new Date();
+👤 ${ctx.from.first_name}
+🆔 ${ctx.from.id}
 
-  expire.setDate(expire.getDate() + service.plan.days);
+سرویس:
+#${serviceId}`,
 
-  await clientService.update(service.id, {
-    expireAt: expire,
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "✅ تایید",
+            callback_data: `admin_renew_ok:${serviceId}:${ctx.from.id}`,
+          },
+          {
+            text: "❌ رد",
+            callback_data: `admin_renew_reject:${ctx.from.id}`,
+          },
+        ],
+      ],
+    },
   });
 
-  await xuiService.extendClient(service.email, expire.getTime());
+  await sessionManager.clear(ctx.from.id);
 
-  await ctx.editMessageCaption(
-    ctx.update.callback_query.message.caption + "\n\n✅ تایید شد",
+  return ctx.reply(
+    "✅ رسید شما دریافت شد.\n\nپس از تایید مدیر سرویس به صورت خودکار تمدید خواهد شد.",
   );
-
-  await ctx.telegram.sendMessage(
-    userId,
-    `✅ پرداخت شما تایید شد.
-
-سرویس با موفقیت تمدید شد.
-
-اعتبار جدید:
-
-${expire.toLocaleDateString("fa-IR")}`,
-  );
-
-  return ctx.answerCbQuery("تایید شد");
-}
-
-async function adminRenewReject(ctx, userId) {
-  await ctx.editMessageCaption(
-    ctx.update.callback_query.message.caption + "\n\n❌ رد شد",
-  );
-
-  await ctx.telegram.sendMessage(userId, "❌ رسید پرداخت توسط مدیر رد شد.");
-
-  return ctx.answerCbQuery("رد شد");
 }
 
 module.exports = {
@@ -322,6 +307,4 @@ ${result.subscriptionUrl}`,
   acceptRenew,
   rejectRenew,
   receiptUploaded,
-  adminRenewApprove,
-  adminRenewReject,
 };

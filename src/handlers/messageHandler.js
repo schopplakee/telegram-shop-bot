@@ -3,6 +3,7 @@ const adminController = require("../controllers/adminController");
 const countryController = require("../controllers/countryController");
 const serverController = require("../controllers/serverController");
 const planController = require("../controllers/planController");
+const paymentController = require("../controllers/paymentController");
 
 const MENU = require("../constants/menu");
 const ADMIN = require("../constants/adminMenu");
@@ -51,6 +52,35 @@ const routes = {
 };
 
 module.exports = async (ctx) => {
+  // ----------------------------
+  // Receipt Upload
+  // ----------------------------
+
+  if (ctx.message?.photo || ctx.message?.document) {
+    const currentSession = await sessionManager.get(ctx.from.id);
+
+    if (
+      currentSession &&
+      currentSession.module === "renew_card" &&
+      currentSession.step === "receipt"
+    ) {
+      const photoId =
+        ctx.message.photo?.at(-1)?.file_id ||
+        (ctx.message.document &&
+        ctx.message.document.mime_type?.startsWith("image/")
+          ? ctx.message.document.file_id
+          : null);
+
+      if (!photoId) {
+        return ctx.reply("❌ لطفا تصویر ارسال کنید.");
+      }
+
+      return paymentController.receiptUploaded(ctx, currentSession, photoId);
+    }
+  }
+
+  // Next Section
+
   const text = ctx.message?.text || "";
 
   if (text === "❌ لغو") {
@@ -93,58 +123,6 @@ module.exports = async (ctx) => {
 
   if (!currentSession) {
     return;
-  }
-
-  // ----------------------
-  // Receipt Upload
-  // ----------------------
-
-  if (
-    currentSession.module === "renew_card" &&
-    currentSession.step === "receipt"
-  ) {
-    const photo =
-      ctx.message.photo?.at(-1)?.file_id ||
-      (ctx.message.document &&
-      ctx.message.document.mime_type?.startsWith("image/")
-        ? ctx.message.document.file_id
-        : null);
-
-    if (!photo) {
-      return ctx.reply("❌ لطفا تصویر رسید را ارسال کنید.");
-    }
-
-    const paymentController = require("../controllers/paymentController");
-
-    const serviceId = currentSession.data.serviceId;
-
-    await ctx.telegram.sendPhoto(process.env.ADMIN_ID, photo, {
-      caption: `📥 رسید تمدید سرویس
-
-👤 ${ctx.from.first_name}
-🆔 ${ctx.from.id}
-
-سرویس: #${serviceId}`,
-
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: "✅ تایید",
-              callback_data: `admin_renew_ok:${serviceId}:${ctx.from.id}`,
-            },
-            {
-              text: "❌ رد",
-              callback_data: `admin_renew_reject:${ctx.from.id}`,
-            },
-          ],
-        ],
-      },
-    });
-
-    await sessionManager.clear(ctx.from.id);
-
-    return paymentController.receiptUploaded(ctx);
   }
 
   switch (currentSession.module) {
