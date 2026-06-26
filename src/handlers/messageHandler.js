@@ -108,7 +108,7 @@ module.exports = async (ctx) => {
 
   const session = await sessionManager.get(ctx.from.id);
 
-  if (session && routes[text]) {
+  if (session && routes[text] && session.module !== "renew_card") {
     await sessionManager.clear(ctx.from.id);
   }
 

@@ -1,6 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+const { ADMIN_ID } = require("../configs/admin");
+
 const paymentKeyboard = require("../keyboards/paymentKeyboard");
 
 const userService = require("../services/userService");
@@ -110,22 +112,59 @@ async function cardRenew(ctx, serviceId) {
 پس از پرداخت، تصویر رسید را ارسال کنید.`);
 }
 
-async function receiveRenewReceipt(ctx) {
-  const session = await sessionManager.get(ctx.from.id);
+async function acceptRenew(ctx, serviceId, telegramId) {
+  const service = await clientService.get(serviceId);
 
-  if (!session || session.step !== "renew_card_receipt") {
-    return;
+  const expire =
+    new Date(service.expireAt) > new Date()
+      ? new Date(service.expireAt)
+      : new Date();
+
+  expire.setDate(expire.getDate() + service.plan.days);
+
+  await prisma.service.update({
+    where: {
+      id: service.id,
+    },
+    data: {
+      expireAt: expire,
+    },
+  });
+
+  const result = await xuiService.extendClient(service.email, expire.getTime());
+
+  if (!result.success) {
+    return ctx.answerCbQuery("خطا در تمدید");
   }
 
-  if (!ctx.message.photo) {
-    return ctx.reply("❌ لطفاً تصویر رسید را ارسال کنید.");
-  }
+  await ctx.telegram.sendMessage(
+    telegramId,
+    `✅ پرداخت شما تایید شد.
 
-  const photo = ctx.message.photo[ctx.message.photo.length - 1].file_id;
+🎉 سرویس با موفقیت تمدید گردید.`,
+  );
 
+  await ctx.answerCbQuery("تایید شد");
+
+  return ctx.editMessageCaption({
+    caption: "✅ درخواست تایید و سرویس تمدید شد.",
+  });
+}
+
+async function rejectRenew(ctx, serviceId, telegramId) {
+  await ctx.telegram.sendMessage(telegramId, "❌ رسید پرداخت توسط مدیر رد شد.");
+
+  await ctx.answerCbQuery("رد شد");
+
+  return ctx.editMessageCaption({
+    caption: "❌ درخواست رد شد.",
+  });
+}
+
+async function receiptUploaded(ctx, session, photoId) {
   const service = await clientService.get(session.data.serviceId);
 
-  await ctx.telegram.sendPhoto(process.env.ADMIN_ID, photo, {
+  await ctx.telegram.sendPhoto(ADMIN_ID, photoId, {
     caption: `🧾 درخواست تمدید سرویس
 
 👤 ${ctx.from.first_name}
@@ -152,91 +191,10 @@ async function receiveRenewReceipt(ctx) {
 
   await sessionManager.clear(ctx.from.id);
 
-  return ctx.reply("✅ رسید ثبت شد و منتظر تایید مدیر است.");
-}
-
-async function acceptRenew(ctx, serviceId, telegramId) {
-  const service = await clientService.get(serviceId);
-
-  const expire =
-    new Date(service.expireAt) > new Date()
-      ? new Date(service.expireAt)
-      : new Date();
-
-  expire.setDate(expire.getDate() + service.plan.days);
-
-  await prisma.service.update({
-    where: {
-      id: service.id,
-    },
-    data: {
-      expireAt: expire,
-    },
-  });
-
-  await xuiService.extendClient(service.email, expire.getTime());
-
-  await ctx.telegram.sendMessage(
-    telegramId,
-    `✅ پرداخت شما تایید شد.
-
-سرویس با موفقیت تمدید گردید.`,
-  );
-
-  await ctx.answerCbQuery("تایید شد");
-
-  return ctx.editMessageCaption({
-    caption: "✅ تایید شد",
-  });
-}
-
-async function rejectRenew(ctx, serviceId, telegramId) {
-  await ctx.telegram.sendMessage(telegramId, "❌ پرداخت شما توسط مدیر رد شد.");
-
-  await ctx.answerCbQuery("رد شد");
-
-  return ctx.editMessageCaption({
-    caption: "❌ رد شد",
-  });
-}
-
-async function receiptUploaded(ctx, session, photoId) {
-  const service = await clientService.get(session.data.serviceId);
-
-  await ctx.telegram.sendPhoto(process.env.ADMIN_ID, photoId, {
-    caption: `🧾 درخواست تمدید
-
-👤 ${ctx.from.first_name}
-🆔 ${ctx.from.id}
-
-📧 ${service.email}`,
-
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: "✅ تایید",
-            callback_data: `admin_renew_ok:${service.id}:${ctx.from.id}`,
-          },
-          {
-            text: "❌ رد",
-            callback_data: `admin_renew_reject:${ctx.from.id}`,
-          },
-        ],
-      ],
-    },
-  });
-
-  await sessionManager.clear(ctx.from.id);
-
   return ctx.reply(
     "✅ رسید شما دریافت شد و پس از تایید مدیر سرویس تمدید خواهد شد.",
   );
 }
-
-module.exports = {
-  ...receiptUploaded,
-};
 
 module.exports = {
   async select(ctx) {
@@ -300,7 +258,6 @@ ${result.subscriptionUrl}`,
 
   walletRenew,
   cardRenew,
-  receiveRenewReceipt,
   acceptRenew,
   rejectRenew,
   receiptUploaded,
